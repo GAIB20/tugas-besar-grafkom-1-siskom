@@ -1,37 +1,9 @@
-const createShader = (
-  gl: WebGLRenderingContext,
-  type: number,
-  source: string
-) => {
-  const shader = gl.createShader(type);
-  if (shader) {
-    gl.shaderSource(shader, source);
-    gl.compileShader(shader);
-    const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-    if (success) return shader;
+import { initDrawObject, drawObject, getMousePosition } from './draw';
+import { initBuffers, bindBuffers, createShader, createProgram } from './buffer';
 
-    console.error(gl.getShaderInfoLog(shader));
-    gl.deleteShader(shader);
-  }
-};
+let startClick: { x: number; y: number } | null = null; 
 
-const createProgram = (
-  gl: WebGLRenderingContext,
-  vtxShd: WebGLShader,
-  frgShd: WebGLShader
-) => {
-  const program = gl.createProgram();
-  if (program) {
-    gl.attachShader(program, vtxShd);
-    gl.attachShader(program, frgShd);
-    gl.linkProgram(program);
-    const success = gl.getProgramParameter(program, gl.LINK_STATUS);
-    if (success) return program;
-
-    console.error(gl.getProgramInfoLog(program));
-    gl.deleteProgram(program);
-  }
-};
+let currentDrawMode: string | null = null; 
 
 const init = () => {
   const canvas = document.getElementById('c') as HTMLCanvasElement;
@@ -42,6 +14,8 @@ const init = () => {
     return;
   }
 
+  initBuffers(gl);
+
   const vtxShaderSource = (
     document.getElementById('vertex-shader-2d') as HTMLScriptElement
   ).text;
@@ -51,56 +25,64 @@ const init = () => {
 
   const vertexShader = createShader(gl, gl.VERTEX_SHADER, vtxShaderSource);
   const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragShaderSource);
-  
-  if (!vertexShader) return;
-  if (!fragmentShader) return;
 
-  const program = createProgram(gl, vertexShader, fragmentShader)
-  if (!program) return
+  if (!vertexShader || !fragmentShader) return;
 
-  const resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution");
+  const program = createProgram(gl, vertexShader, fragmentShader);
+  if (!program) return;
 
-  const positionAttributeLocation = gl.getAttribLocation(program, "a_position")
-  const positionBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+  // Bind buffers
+  bindBuffers(gl, program);
 
-  const positions = [
-    // X Y
-    10, 20,
-    80, 20,
-    10, 30,
-    10, 30,
-    80, 20,
-    80, 30,
-  ];
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+  // Event listeners
+  const lineBtn = document.getElementById('line-btn');
+  if (lineBtn) {
+    lineBtn.addEventListener('click', () => {
+      console.log('Line button clicked');
+      currentDrawMode = 'line';
+      initDrawObject(currentDrawMode);
+    });
+  }
 
-  gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-  gl.clearColor(0, 0, 0, 0);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.useProgram(program)
-  
-  gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
-  gl.enableVertexAttribArray(positionAttributeLocation)
+  const squareBtn = document.getElementById('square-btn');
+  if (squareBtn) {
+    squareBtn.addEventListener('click', () => {
+      currentDrawMode = 'square';
+      initDrawObject(currentDrawMode);
+    });
+  }
 
-  gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-  let size = 2;
-  let type = gl.FLOAT;
-  let normalize = false;
-  let stride = 0;
-  let offset = 0;
-  gl.vertexAttribPointer(
-    positionAttributeLocation,
-    size,
-    type,
-    normalize,
-    stride,
-    offset,
-  );
+  const rectangleBtn = document.getElementById('rectangle-btn');
+  if (rectangleBtn) {
+    rectangleBtn.addEventListener('click', () => {
+      currentDrawMode = 'rectangle';
+      initDrawObject(currentDrawMode);
+    });
+  }
 
-  let primitiveType = gl.TRIANGLES;
-  let count = 6;
-  gl.drawArrays(primitiveType, offset, count);
+  const polygonBtn = document.getElementById('polygon-btn');
+  const verticesInput = document.getElementById('vertices-input') as HTMLInputElement;
+  if (polygonBtn && verticesInput) {
+    polygonBtn.addEventListener('click', () => {
+      currentDrawMode = 'polygon';
+      const numVertices = parseInt(verticesInput.value);
+      initDrawObject(currentDrawMode, numVertices);
+    });
+  }
+
+  canvas.addEventListener('click', (event: MouseEvent) => {
+    if (currentDrawMode) {
+      const mousePos = getMousePosition(canvas, event);
+
+      if (!startClick) {
+        startClick = mousePos;
+      } else {
+        drawObject(gl, program, startClick.x, startClick.y, mousePos.x, mousePos.y);
+        startClick = null; 
+      }
+    }
+  });
 };
 
 init();
+
