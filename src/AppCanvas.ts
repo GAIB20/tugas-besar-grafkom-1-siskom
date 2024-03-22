@@ -1,9 +1,9 @@
 import BaseShape from './Base/BaseShape';
 
 export default class AppCanvas {
-    gl: WebGLRenderingContext;
-    positionBuffer: WebGLBuffer;
-    colorBuffer: WebGLBuffer;
+    private gl: WebGLRenderingContext;
+    private positionBuffer: WebGLBuffer;
+    private colorBuffer: WebGLBuffer;
 
     private _shapes: Record<string, BaseShape> = {};
 
@@ -63,6 +63,11 @@ export default class AppCanvas {
     public set shapes(v: Record<string, BaseShape>) {
         this._shapes = v;
         this.render();
+    }
+
+    public generateIdFromTag(tag: string) {
+        const withSameTag = Object.keys(this.shapes).filter((id) => id.startsWith(tag + '-'));
+        return `${tag}-${withSameTag.length + 1}`
     }
 
     public addShape(shape: BaseShape) {

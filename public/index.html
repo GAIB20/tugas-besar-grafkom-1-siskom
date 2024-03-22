@@ -4,15 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Siskom</title>
+  <link rel="stylesheet" href="reset.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <canvas id="c" width="800" height="600">
-    Your browser does not support WEBGL
-  </canvas>
+    <div id="container">
+        <canvas id="c" width="600" height="450">
+          Your browser does not support WEBGL
+        </canvas>
+        <div id="shape-chooser">
+            <h1>Choose shape</h1>
+            <div id="shape-button-container">
+            </div>
+          </div>
+        <div id="toolbar">
+            <h1>Toolbar</h1>
+            <div id="toolbar-container">
+            </div>
+        </div>
+    </div>
 
-  <div>
-    <i>Canvas above</i>
-  </div>
   <script id="vertex-shader-2d" type="notjs">
     attribute vec2 a_position;
     attribute vec3 a_color;
