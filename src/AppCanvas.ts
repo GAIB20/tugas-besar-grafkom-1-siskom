@@ -52,7 +52,7 @@ export default class AppCanvas {
                 gl.STATIC_DRAW
             );
 
-            gl.drawArrays(shape.glDrawType, 0, 3);
+            gl.drawArrays(shape.glDrawType, 0, shape.pointList.length);
         });
     }
 
