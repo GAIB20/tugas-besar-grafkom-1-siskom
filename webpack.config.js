@@ -15,6 +15,9 @@ module.exports = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
+    alias: {
+        Main: path.resolve(__dirname, "src/"),
+      },
   },
   devServer: {
     static: {
