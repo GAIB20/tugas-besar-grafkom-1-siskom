@@ -1,9 +1,11 @@
 import AppCanvas from '../../AppCanvas';
 import { IShapeMakerController } from './Shape/IShapeMakerController';
 import LineMakerController from './Shape/LineMakerController';
+import RectangleMakerController from './Shape/RectangleMakerController';
 
 enum AVAIL_SHAPES {
     Line = "Line",
+    Rectangle = "Rectangle"
 }
 
 export default class CanvasController {
@@ -24,6 +26,7 @@ export default class CanvasController {
         this.buttonContainer = buttonContainer;
 
         this._shapeController = new LineMakerController(appCanvas);
+
         this.canvasElmt.onclick = (e) => {
             this.shapeController?.handleClick(e.offsetX, e.offsetY);
         };
@@ -45,6 +48,8 @@ export default class CanvasController {
         switch (shapeStr) {
             case AVAIL_SHAPES.Line:
                 return new LineMakerController(this.appCanvas);
+            case AVAIL_SHAPES.Rectangle:
+                return new RectangleMakerController(this.appCanvas);
             default:
                 throw new Error('Incorrect shape string');
         }
