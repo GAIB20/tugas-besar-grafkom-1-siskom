@@ -1,6 +1,5 @@
 import AppCanvas from "../../../AppCanvas";
 import Color from "../../../Base/Color";
-import Line from "../../../Shapes/Line";
 import Rectangle from "../../../Shapes/Rectangle";
 import { IShapeMakerController } from "./IShapeMakerController";
 
