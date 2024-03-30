@@ -63,6 +63,18 @@ const init = () => {
     const program = createProgram(gl, vertexShader, fragmentShader);
     if (!program) return;
 
+    const dpr = window.devicePixelRatio;
+    const displayWidth = Math.round(canvas.clientWidth * dpr);
+    const displayHeight = Math.round(canvas.clientHeight * dpr);
+
+    const needResize =
+        gl.canvas.width != displayWidth || gl.canvas.height != displayHeight;
+
+    if (needResize) {
+        gl.canvas.width = displayWidth;
+        gl.canvas.height = displayHeight;
+    }
+
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);

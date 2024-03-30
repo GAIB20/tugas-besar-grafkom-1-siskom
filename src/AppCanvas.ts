@@ -4,8 +4,12 @@ export default class AppCanvas {
     private gl: WebGLRenderingContext;
     private positionBuffer: WebGLBuffer;
     private colorBuffer: WebGLBuffer;
+    private _updateToolbar: (() => void) | null = null;
 
     private _shapes: Record<string, BaseShape> = {};
+
+    width: number;
+    height: number;
 
     constructor(
         gl: WebGLRenderingContext,
@@ -15,6 +19,9 @@ export default class AppCanvas {
         this.gl = gl;
         this.positionBuffer = positionBuffer;
         this.colorBuffer = colorBuffer;
+
+        this.width = gl.canvas.width;
+        this.height = gl.canvas.height;
 
         this.render();
     }
@@ -60,9 +67,15 @@ export default class AppCanvas {
         return this._shapes;
     }
 
-    public set shapes(v: Record<string, BaseShape>) {
+    private set shapes(v: Record<string, BaseShape>) {
         this._shapes = v;
         this.render();
+        if (this._updateToolbar)
+            this._updateToolbar.call(this);
+    }
+
+    public set updateToolbar(v : () => void) {
+        this._updateToolbar = v;
     }
 
     public generateIdFromTag(tag: string) {
@@ -71,13 +84,35 @@ export default class AppCanvas {
     }
 
     public addShape(shape: BaseShape) {
-        if (shape.id in Object.keys(this.shapes)) {
+        if (Object.keys(this.shapes).includes(shape.id)) {
             console.error('Shape ID already used');
             return;
         }
 
         const newShapes = { ...this.shapes };
         newShapes[shape.id] = shape;
+        this.shapes = newShapes;
+    }
+
+    public editShape(newShape: BaseShape) {
+        if (!Object.keys(this.shapes).includes(newShape.id)) {
+            console.error('Shape ID not found');
+            return;
+        }
+
+        const newShapes = { ...this.shapes };
+        newShapes[newShape.id] = newShape;
+        this.shapes = newShapes;
+    }
+
+    public deleteShape(newShape: BaseShape) {
+        if (!Object.keys(this.shapes).includes(newShape.id)) {
+            console.error('Shape ID not found');
+            return;
+        }
+
+        const newShapes = { ...this.shapes };
+        delete newShapes[newShape.id];
         this.shapes = newShapes;
     }
 }

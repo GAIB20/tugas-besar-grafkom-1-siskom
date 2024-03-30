@@ -1,5 +1,6 @@
 import AppCanvas from './AppCanvas';
 import CanvasController from './Controllers/Maker/CanvasController';
+import ToolbarController from './Controllers/Toolbar/ToolbarController';
 import init from './init';
 
 const main = () => {
@@ -12,8 +13,11 @@ const main = () => {
     const { gl, colorBuffer, positionBuffer } = initRet;
 
     const appCanvas = new AppCanvas(gl, positionBuffer, colorBuffer);
+    
     const canvasController = new CanvasController(appCanvas);
     canvasController.start();
+    
+    new ToolbarController(appCanvas);
 
     // const red = new Color(255, 0, 200)
     // const triangle = new Triangle('tri-1', red, 50, 50, 20, 500, 200, 100);

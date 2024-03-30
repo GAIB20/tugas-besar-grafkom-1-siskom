@@ -9,19 +9,30 @@
 </head>
 <body>
     <div id="container">
+        <div id="editor">
+            <div id="shape-chooser">
+                <h1>Choose shape</h1>
+                <div id="shape-button-container">
+                </div>
+              </div>
+            <div id="toolbar">
+                <div id="toolbar-header">
+                    <h1>Toolbar</h1>
+                    <select name="item-picker" id="toolbar-item-picker">
+                        <option value="">Choose an object</option>
+                    </select>
+                </div>
+                <div id="toolbar-container">
+                    <div class="toolbar-slider-container">
+                        <div>Length</div>
+                        <input type="range" min="1" max="300" />
+                    </div>
+                </div>
+            </div>
+        </div>
         <canvas id="c" width="600" height="450">
           Your browser does not support WEBGL
         </canvas>
-        <div id="shape-chooser">
-            <h1>Choose shape</h1>
-            <div id="shape-button-container">
-            </div>
-          </div>
-        <div id="toolbar">
-            <h1>Toolbar</h1>
-            <div id="toolbar-container">
-            </div>
-        </div>
     </div>
 
   <script id="vertex-shader-2d" type="notjs">
