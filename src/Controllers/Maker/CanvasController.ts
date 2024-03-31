@@ -30,8 +30,9 @@ export default class CanvasController {
         this._shapeController = new LineMakerController(appCanvas);
 
         this.canvasElmt.onclick = (e) => {
-            this.shapeController?.handleClick(e.offsetX, e.offsetY);
-            console.log(`x: ${e.offsetX}, y: ${e.offsetY}`);
+            const correctX = e.offsetX * window.devicePixelRatio;
+            const correctY = e.offsetY * window.devicePixelRatio;            
+            this.shapeController?.handleClick(correctX, correctY);
         };
     }
 
@@ -43,8 +44,9 @@ export default class CanvasController {
         this._shapeController = v;
 
         this.canvasElmt.onclick = (e) => {
-            this.shapeController?.handleClick(e.offsetX, e.offsetY);
-            console.log(`x: ${e.offsetX}, y: ${e.offsetY}`);
+            const correctX = e.offsetX * window.devicePixelRatio;
+            const correctY = e.offsetY * window.devicePixelRatio;
+            this.shapeController?.handleClick(correctX, correctY);
         };
     }
     
