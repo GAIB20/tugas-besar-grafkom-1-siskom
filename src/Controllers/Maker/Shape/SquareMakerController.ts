@@ -19,19 +19,19 @@ export default class SquareMakerController implements IShapeMakerController {
             const id = this.appCanvas.generateIdFromTag('square');
 
             const v1 = {x: x, y: y};
-            console.log(`v1x: ${v1.x}, v1y: ${v1.y}`)
+            // console.log(`v1x: ${v1.x}, v1y: ${v1.y}`)
 
             const v2 = {x: this.origin.x - (y - this.origin.y), 
                 y: this.origin.y + (x-this.origin.x)}
-            console.log(`v2x: ${v2.x}, v2y: ${v2.y}`)
+            // console.log(`v2x: ${v2.x}, v2y: ${v2.y}`)
 
             const v3 = {x: 2*this.origin.x - x, 
                 y: 2*this.origin.y - y}
-            console.log(`v3x: ${v3.x}, v3y: ${v3.y}`)
+            // console.log(`v3x: ${v3.x}, v3y: ${v3.y}`)
 
             const v4 = {x: this.origin.x + (y - this.origin.y), 
                 y: this.origin.y - (x-this.origin.x)}
-            console.log(`v4x: ${v4.x}, v4y: ${v4.y}`)
+            // console.log(`v4x: ${v4.x}, v4y: ${v4.y}`)
 
             const square = new Square(
                 id, black, v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);

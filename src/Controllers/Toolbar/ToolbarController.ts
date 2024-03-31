@@ -1,6 +1,8 @@
 import AppCanvas from '../../AppCanvas';
 import Line from '../../Shapes/Line';
+import Rectangle from '../../Shapes/Rectangle';
 import LineToolbarController from './Shape/LineToolbarController';
+import RectangleToolbarController from './Shape/RectangleToolbarController';
 import IShapeToolbarController from './Shape/ShapeToolbarController';
 
 export default class ToolbarController {
@@ -30,6 +32,8 @@ export default class ToolbarController {
 
             if (shape instanceof Line) {
                 this.toolbarController = new LineToolbarController(shape as Line, appCanvas);
+            } else if (shape instanceof Rectangle) {
+                this.toolbarController = new RectangleToolbarController(shape as Rectangle, appCanvas)
             }
         };
 
