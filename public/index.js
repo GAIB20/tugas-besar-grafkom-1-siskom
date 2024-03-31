@@ -189,10 +189,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 var LineMakerController_1 = __importDefault(__webpack_require__(/*! ./Shape/LineMakerController */ "./src/Controllers/Maker/Shape/LineMakerController.ts"));
 var RectangleMakerController_1 = __importDefault(__webpack_require__(/*! ./Shape/RectangleMakerController */ "./src/Controllers/Maker/Shape/RectangleMakerController.ts"));
+var SquareMakerController_1 = __importDefault(__webpack_require__(/*! ./Shape/SquareMakerController */ "./src/Controllers/Maker/Shape/SquareMakerController.ts"));
 var AVAIL_SHAPES;
 (function (AVAIL_SHAPES) {
     AVAIL_SHAPES["Line"] = "Line";
     AVAIL_SHAPES["Rectangle"] = "Rectangle";
+    AVAIL_SHAPES["Square"] = "Square";
 })(AVAIL_SHAPES || (AVAIL_SHAPES = {}));
 var CanvasController = /** @class */ (function () {
     function CanvasController(appCanvas) {
@@ -233,6 +235,8 @@ var CanvasController = /** @class */ (function () {
                 return new LineMakerController_1.default(this.appCanvas);
             case AVAIL_SHAPES.Rectangle:
                 return new RectangleMakerController_1.default(this.appCanvas);
+            case AVAIL_SHAPES.Square:
+                return new SquareMakerController_1.default(this.appCanvas);
             default:
                 throw new Error('Incorrect shape string');
         }
@@ -334,6 +338,54 @@ exports["default"] = RectangleMakerController;
 
 /***/ }),
 
+/***/ "./src/Controllers/Maker/Shape/SquareMakerController.ts":
+/*!**************************************************************!*\
+  !*** ./src/Controllers/Maker/Shape/SquareMakerController.ts ***!
+  \**************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var Color_1 = __importDefault(__webpack_require__(/*! ../../../Base/Color */ "./src/Base/Color.ts"));
+var Square_1 = __importDefault(__webpack_require__(/*! ../../../Shapes/Square */ "./src/Shapes/Square.ts"));
+var SquareMakerController = /** @class */ (function () {
+    function SquareMakerController(appCanvas) {
+        this.origin = null;
+        this.appCanvas = appCanvas;
+    }
+    SquareMakerController.prototype.handleClick = function (x, y) {
+        if (this.origin === null) {
+            this.origin = { x: x, y: y };
+        }
+        else {
+            var black = new Color_1.default(0, 0, 0);
+            var id = this.appCanvas.generateIdFromTag('square');
+            var v1 = { x: x, y: y };
+            // console.log(`v1x: ${v1.x}, v1y: ${v1.y}`)
+            var v2 = { x: this.origin.x - (y - this.origin.y),
+                y: this.origin.y + (x - this.origin.x) };
+            // console.log(`v2x: ${v2.x}, v2y: ${v2.y}`)
+            var v3 = { x: 2 * this.origin.x - x,
+                y: 2 * this.origin.y - y };
+            // console.log(`v3x: ${v3.x}, v3y: ${v3.y}`)
+            var v4 = { x: this.origin.x + (y - this.origin.y),
+                y: this.origin.y - (x - this.origin.x) };
+            // console.log(`v4x: ${v4.x}, v4y: ${v4.y}`)
+            var square = new Square_1.default(id, black, v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
+            this.appCanvas.addShape(square);
+            this.origin = null;
+        }
+    };
+    return SquareMakerController;
+}());
+exports["default"] = SquareMakerController;
+
+
+/***/ }),
+
 /***/ "./src/Controllers/Toolbar/Shape/LineToolbarController.ts":
 /*!****************************************************************!*\
   !*** ./src/Controllers/Toolbar/Shape/LineToolbarController.ts ***!
@@ -427,6 +479,69 @@ exports["default"] = LineToolbarController;
 
 /***/ }),
 
+/***/ "./src/Controllers/Toolbar/Shape/RectangleToolbarController.ts":
+/*!*********************************************************************!*\
+  !*** ./src/Controllers/Toolbar/Shape/RectangleToolbarController.ts ***!
+  \*********************************************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var ShapeToolbarController_1 = __importDefault(__webpack_require__(/*! ./ShapeToolbarController */ "./src/Controllers/Toolbar/Shape/ShapeToolbarController.ts"));
+var RectangleToolbarController = /** @class */ (function (_super) {
+    __extends(RectangleToolbarController, _super);
+    function RectangleToolbarController(rectangle, appCanvas) {
+        var _this = _super.call(this, rectangle, appCanvas) || this;
+        _this.rectangle = rectangle;
+        // X Position
+        _this.posXSlider = _this.createSlider('Position X', rectangle.center.x, 1, appCanvas.width);
+        _this.registerSlider(_this.posXSlider, function (e) { _this.updatePosX(parseInt(_this.posXSlider.value)); });
+        // Y Position
+        _this.posYSlider = _this.createSlider('Position Y', rectangle.center.y, 1, appCanvas.width);
+        _this.registerSlider(_this.posYSlider, function (e) { _this.updatePosY(parseInt(_this.posYSlider.value)); });
+        return _this;
+    }
+    RectangleToolbarController.prototype.updatePosX = function (newPosX) {
+        var diff = newPosX - this.rectangle.center.x;
+        this.rectangle.center.x = newPosX;
+        for (var i = 0; i < 4; i++) {
+            this.rectangle.pointList[i].x = this.rectangle.pointList[i].x + diff;
+        }
+        this.updateShape(this.rectangle);
+    };
+    RectangleToolbarController.prototype.updatePosY = function (newPosY) {
+        var diff = newPosY - this.rectangle.center.y;
+        this.rectangle.center.y = newPosY;
+        for (var i = 0; i < 4; i++) {
+            this.rectangle.pointList[i].y = this.rectangle.pointList[i].y + diff;
+        }
+        this.updateShape(this.rectangle);
+    };
+    return RectangleToolbarController;
+}(ShapeToolbarController_1.default));
+exports["default"] = RectangleToolbarController;
+
+
+/***/ }),
+
 /***/ "./src/Controllers/Toolbar/Shape/ShapeToolbarController.ts":
 /*!*****************************************************************!*\
   !*** ./src/Controllers/Toolbar/Shape/ShapeToolbarController.ts ***!
@@ -482,7 +597,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 var Line_1 = __importDefault(__webpack_require__(/*! ../../Shapes/Line */ "./src/Shapes/Line.ts"));
+var Rectangle_1 = __importDefault(__webpack_require__(/*! ../../Shapes/Rectangle */ "./src/Shapes/Rectangle.ts"));
 var LineToolbarController_1 = __importDefault(__webpack_require__(/*! ./Shape/LineToolbarController */ "./src/Controllers/Toolbar/Shape/LineToolbarController.ts"));
+var RectangleToolbarController_1 = __importDefault(__webpack_require__(/*! ./Shape/RectangleToolbarController */ "./src/Controllers/Toolbar/Shape/RectangleToolbarController.ts"));
 var ToolbarController = /** @class */ (function () {
     function ToolbarController(appCanvas) {
         var _this = this;
@@ -498,6 +615,9 @@ var ToolbarController = /** @class */ (function () {
             _this.clearToolbarElmt();
             if (shape instanceof Line_1.default) {
                 _this.toolbarController = new LineToolbarController_1.default(shape, appCanvas);
+            }
+            else if (shape instanceof Rectangle_1.default) {
+                _this.toolbarController = new RectangleToolbarController_1.default(shape, appCanvas);
             }
         };
         this.updateShapeList();
@@ -615,12 +735,59 @@ var Rectangle = /** @class */ (function (_super) {
         var v2 = new Vertex_1.default(x2, y2);
         var v3 = new Vertex_1.default(x3, y3);
         var v4 = new Vertex_1.default(x4, y4);
+        _this.center = { x: (v1.x + v3.x) / 2, y: (v1.y + v3.y) / 2 };
         _this.pointList.push(v1, v2, v3, v4);
         return _this;
     }
     return Rectangle;
 }(BaseShape_1.default));
 exports["default"] = Rectangle;
+
+
+/***/ }),
+
+/***/ "./src/Shapes/Square.ts":
+/*!******************************!*\
+  !*** ./src/Shapes/Square.ts ***!
+  \******************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+var BaseShape_1 = __importDefault(__webpack_require__(/*! ../Base/BaseShape */ "./src/Base/BaseShape.ts"));
+var Vertex_1 = __importDefault(__webpack_require__(/*! ../Base/Vertex */ "./src/Base/Vertex.ts"));
+var Square = /** @class */ (function (_super) {
+    __extends(Square, _super);
+    function Square(id, color, x1, y1, x2, y2, x3, y3, x4, y4) {
+        var _this = _super.call(this, 6, id, color) || this;
+        var v1 = new Vertex_1.default(x1, y1);
+        var v2 = new Vertex_1.default(x2, y2);
+        var v3 = new Vertex_1.default(x3, y3);
+        var v4 = new Vertex_1.default(x4, y4);
+        _this.pointList.push(v1, v2, v3, v4);
+        return _this;
+    }
+    return Square;
+}(BaseShape_1.default));
+exports["default"] = Square;
 
 
 /***/ }),
