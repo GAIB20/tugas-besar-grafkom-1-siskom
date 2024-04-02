@@ -2,10 +2,12 @@ import AppCanvas from '../../AppCanvas';
 import { IShapeMakerController } from './Shape/IShapeMakerController';
 import LineMakerController from './Shape/LineMakerController';
 import RectangleMakerController from './Shape/RectangleMakerController';
+import SquareMakerController from './Shape/SquareMakerController';
 
 enum AVAIL_SHAPES {
     Line = "Line",
-    Rectangle = "Rectangle"
+    Rectangle = "Rectangle",
+    Square = "Square"
 }
 
 export default class CanvasController {
@@ -28,7 +30,9 @@ export default class CanvasController {
         this._shapeController = new LineMakerController(appCanvas);
 
         this.canvasElmt.onclick = (e) => {
-            this.shapeController?.handleClick(e.offsetX, e.offsetY);
+            const correctX = e.offsetX * window.devicePixelRatio;
+            const correctY = e.offsetY * window.devicePixelRatio;            
+            this.shapeController?.handleClick(correctX, correctY);
         };
     }
 
@@ -40,7 +44,9 @@ export default class CanvasController {
         this._shapeController = v;
 
         this.canvasElmt.onclick = (e) => {
-            this.shapeController?.handleClick(e.offsetX, e.offsetY);
+            const correctX = e.offsetX * window.devicePixelRatio;
+            const correctY = e.offsetY * window.devicePixelRatio;
+            this.shapeController?.handleClick(correctX, correctY);
         };
     }
     
@@ -50,6 +56,8 @@ export default class CanvasController {
                 return new LineMakerController(this.appCanvas);
             case AVAIL_SHAPES.Rectangle:
                 return new RectangleMakerController(this.appCanvas);
+            case AVAIL_SHAPES.Square:
+                return new SquareMakerController(this.appCanvas);
             default:
                 throw new Error('Incorrect shape string');
         }

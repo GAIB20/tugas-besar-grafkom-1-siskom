@@ -64,8 +64,9 @@ const init = () => {
     if (!program) return;
 
     const dpr = window.devicePixelRatio;
-    const displayWidth = Math.round(canvas.clientWidth * dpr);
-    const displayHeight = Math.round(canvas.clientHeight * dpr);
+    const {width, height} = canvas.getBoundingClientRect();
+    const displayWidth  = Math.round(width * dpr);
+    const displayHeight = Math.round(height * dpr);
 
     const needResize =
         gl.canvas.width != displayWidth || gl.canvas.height != displayHeight;
