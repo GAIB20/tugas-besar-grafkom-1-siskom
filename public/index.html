@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Siskom</title>
-  <link rel="stylesheet" href="reset.css">
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Siskom</title>
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div id="container">
         <div id="editor">
@@ -14,7 +16,7 @@
                 <h1>Choose shape</h1>
                 <div id="shape-button-container">
                 </div>
-              </div>
+            </div>
             <div id="toolbar">
                 <div id="toolbar-header">
                     <h1>Toolbar</h1>
@@ -23,19 +25,23 @@
                     </select>
                 </div>
                 <div id="toolbar-container">
-                    <div class="toolbar-slider-container">
-                        <div>Length</div>
-                        <input type="range" min="1" max="300" />
-                    </div>
+                </div>
+                <div id="vertex-header">
+                    <h1>Vertex</h1>
+                    <select name="item-picker" id="vertex-picker">
+                        <option value="">Choose a vertex</option>
+                    </select>
+                </div>
+                <div id="vertex-container">
                 </div>
             </div>
         </div>
         <canvas id="c" width="600" height="450">
-          Your browser does not support WEBGL
+            Your browser does not support WEBGL
         </canvas>
     </div>
 
-  <script id="vertex-shader-2d" type="notjs">
+    <script id="vertex-shader-2d" type="notjs">
     attribute vec2 a_position;
     attribute vec3 a_color;
 
@@ -53,7 +59,7 @@
     }
   </script>
 
-  <script id="fragment-shader-2d" type="notjs">
+    <script id="fragment-shader-2d" type="notjs">
     precision mediump float;
     varying vec3 v_color;
 
@@ -62,6 +68,7 @@
     }
   </script>
 
-  <script src="index.js"></script>
+    <script src="index.js"></script>
 </body>
+
 </html>

@@ -10,9 +10,7 @@ export const euclideanDistanceVtx = (a: Vertex, b: Vertex): number => {
 // 360 DEG
 export const getAngle = (origin: Vertex, target: Vertex) => {
     const plusMinusDeg = radToDeg(Math.atan2(origin.y - target.y, origin.x - target.x));
-    const posDeg = plusMinusDeg % 180;
-    const is_more_than_180 = origin.y > target.y;
-    return !is_more_than_180 ? posDeg : posDeg + 180;
+    return plusMinusDeg >= 0 ? 180 - plusMinusDeg : Math.abs(plusMinusDeg) + 180;
 }
 
 export const radToDeg = (rad: number) => {
