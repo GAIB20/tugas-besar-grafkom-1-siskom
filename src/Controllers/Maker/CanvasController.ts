@@ -5,15 +5,16 @@ import RectangleMakerController from './Shape/RectangleMakerController';
 import SquareMakerController from './Shape/SquareMakerController';
 
 enum AVAIL_SHAPES {
-    Line = "Line",
-    Rectangle = "Rectangle",
-    Square = "Square"
+    Line = 'Line',
+    Rectangle = 'Rectangle',
+    Square = 'Square',
 }
 
 export default class CanvasController {
     private _shapeController: IShapeMakerController;
     private canvasElmt: HTMLCanvasElement;
     private buttonContainer: HTMLDivElement;
+    private colorPicker: HTMLInputElement;
     private appCanvas: AppCanvas;
 
     constructor(appCanvas: AppCanvas) {
@@ -29,10 +30,18 @@ export default class CanvasController {
 
         this._shapeController = new LineMakerController(appCanvas);
 
+        this.colorPicker = document.getElementById(
+            'shape-color-picker'
+        ) as HTMLInputElement;
+
         this.canvasElmt.onclick = (e) => {
             const correctX = e.offsetX * window.devicePixelRatio;
-            const correctY = e.offsetY * window.devicePixelRatio;            
-            this.shapeController?.handleClick(correctX, correctY);
+            const correctY = e.offsetY * window.devicePixelRatio;
+            this.shapeController?.handleClick(
+                correctX,
+                correctY,
+                this.colorPicker.value
+            );
         };
     }
 
@@ -46,10 +55,10 @@ export default class CanvasController {
         this.canvasElmt.onclick = (e) => {
             const correctX = e.offsetX * window.devicePixelRatio;
             const correctY = e.offsetY * window.devicePixelRatio;
-            this.shapeController?.handleClick(correctX, correctY);
+            this.shapeController?.handleClick(correctX, correctY ,this.colorPicker.value);
         };
     }
-    
+
     private initController(shapeStr: AVAIL_SHAPES): IShapeMakerController {
         switch (shapeStr) {
             case AVAIL_SHAPES.Line:
@@ -69,7 +78,9 @@ export default class CanvasController {
             button.classList.add('shape-button');
             button.textContent = shapeStr;
             button.onclick = () => {
-                this.shapeController = this.initController(shapeStr as AVAIL_SHAPES);
+                this.shapeController = this.initController(
+                    shapeStr as AVAIL_SHAPES
+                );
             };
             this.buttonContainer.appendChild(button);
         }

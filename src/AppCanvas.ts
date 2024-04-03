@@ -41,10 +41,9 @@ export default class AppCanvas {
                 point.y,
             ]);
 
-            const baseColorVect = [shape.color.r, shape.color.g, shape.color.b];
             let colors: number[] = [];
             for (let i = 0; i < shape.pointList.length; i++) {
-                colors = colors.concat(baseColorVect);
+                colors.push(shape.pointList[i].c.r, shape.pointList[i].c.g, shape.pointList[i].c.b);
             }
 
             // Bind color data
