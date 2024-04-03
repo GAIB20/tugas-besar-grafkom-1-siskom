@@ -11,7 +11,7 @@ export default abstract class BaseShape {
     scaleX: number;
     scaleY: number;
 
-    constructor(glDrawType: number, id: string, color: Color, center: Vertex, rotation = 0, scaleX = 1, scaleY = 1) {
+    constructor(glDrawType: number, id: string, color: Color, center: Vertex = new Vertex(0, 0), rotation = 0, scaleX = 1, scaleY = 1) {
         this.glDrawType = glDrawType;
         this.id = id;
         this.color = color;

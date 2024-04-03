@@ -7,7 +7,7 @@ export default class RectangleToolbarController extends ShapeToolbarController {
     private posXSlider: HTMLInputElement;
     private posYSlider: HTMLInputElement;
     // private widthSlider: HTMLInputElement;
-    // private lengthSlider: HTMLInputElement;
+    private lengthSlider: HTMLInputElement;
     private rotateSlider: HTMLInputElement;
 
     private rectangle: Rectangle;
@@ -23,6 +23,10 @@ export default class RectangleToolbarController extends ShapeToolbarController {
         // Y Position
         this.posYSlider = this.createSlider('Position Y', () => rectangle.center.y,1,appCanvas.width);
         this.registerSlider(this.posYSlider, (e) => {this.updatePosY(parseInt(this.posYSlider.value))})
+
+        // Rotation
+        this.lengthSlider = this.createSlider('Length', () => rectangle.length, 1, appCanvas.width);
+        this.registerSlider(this.lengthSlider, (e) => {this.updateRotation(parseInt(this.rotateSlider.value))})
 
         // Rotation
         this.rotateSlider = this.createSlider('Rotation', this.currentAngle.bind(this), 0, 360);
@@ -82,24 +86,19 @@ export default class RectangleToolbarController extends ShapeToolbarController {
     }
 
     private updateRotation(newRot: number){
-        const rotRadians = newRot * Math.PI / 180;
-        // Convert rotation difference to radians
-    
-        const centerX = this.rectangle.center.x;
-        const centerY = this.rectangle.center.y;
-    
-        this.rectangle.pointList = this.rectangle.pointList.map(vertex => {
-            const x = vertex.x - centerX;
-            const y = vertex.y - centerY;
-    
-            // Apply rotation formula
-            const newX = x * Math.cos(rotRadians) - y * Math.sin(rotRadians) + centerX;
-            const newY = x * Math.sin(rotRadians) + y * Math.cos(rotRadians) + centerY;
-    
-            return { ...vertex, x: newX, y: newY }; // Assuming you can use a similar structure or class method to update vertices
-        });
-    
-        // No need to recalculate the center since rotation doesn't affect it
-        this.updateShape(this.rectangle); // Update the canvas with the new rectangle position
+        this.rectangle.setRotation(newRot);
+        this.updateShape(this.rectangle);
     }
+
+    updateLength(newLength: number) {
+        const currentLength = euclideanDistanceVtx(this.rectangle.pointList[0], this.rectangle.pointList[1]);
+        
+        const scaleFactor = newLength / currentLength;
+        
+        this.rectangle.pointList[1].x = this.rectangle.pointList[0].x + (this.rectangle.pointList[1].x - this.rectangle.pointList[0].x) * scaleFactor;
+        this.rectangle.pointList[2].x = this.rectangle.pointList[0].x + (this.rectangle.pointList[2].x - this.rectangle.pointList[0].x) * scaleFactor;
+        this.rectangle.pointList[3].x = this.rectangle.pointList[0].x + (this.rectangle.pointList[3].x - this.rectangle.pointList[0].x) * scaleFactor;
+    }
+
+    
 }

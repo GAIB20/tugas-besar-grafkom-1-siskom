@@ -18,7 +18,7 @@ export default class RectangleMakerController implements IShapeMakerController {
             const black = new Color(0, 0, 0);
             const id = this.appCanvas.generateIdFromTag('rectangle');
             const rectangle = new Rectangle(
-                id, black, this.origin.x, this.origin.y,this.origin.x, y, x, this.origin.y, x, y);
+                id, black, this.origin.x, this.origin.y,this.origin.x, y, x, this.origin.y, x, y,0,1,1);
             this.appCanvas.addShape(rectangle);
             this.origin = null;
         }

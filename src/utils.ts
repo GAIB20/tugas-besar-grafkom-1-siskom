@@ -87,4 +87,16 @@ export const m3 = {
         b20 * a02 + b21 * a12 + b22 * a22,
       ];
     },
+
+    translate: function(m : number[], tx:number, ty:number) {
+      return m3.multiply(m, m3.translation(tx, ty));
+    },
+  
+    rotate: function(m:number[], angleInRadians:number) {
+      return m3.multiply(m, m3.rotation(angleInRadians));
+    },
+  
+    scale: function(m:number[], sx:number, sy:number) {
+      return m3.multiply(m, m3.scaling(sx, sy));
+    },
   };
