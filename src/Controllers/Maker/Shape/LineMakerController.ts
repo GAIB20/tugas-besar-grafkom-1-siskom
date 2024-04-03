@@ -1,6 +1,7 @@
 import AppCanvas from "../../../AppCanvas";
 import Color from "../../../Base/Color";
 import Line from "../../../Shapes/Line";
+import { hexToRgb } from "../../../utils";
 import { IShapeMakerController } from "./IShapeMakerController";
 
 export default class LineMakerController implements IShapeMakerController {
@@ -11,13 +12,14 @@ export default class LineMakerController implements IShapeMakerController {
         this.appCanvas = appCanvas;
     }
 
-    handleClick(x: number, y: number): void {
+    handleClick(x: number, y: number, colorStr: string): void {
         if (this.origin === null) {
             this.origin = {x, y};
         } else {
-            const red = new Color(1, 0, 0);
+            const {r, g, b} = hexToRgb(colorStr) ?? {r: 0, g: 0, b: 0};
+            const color = new Color(r/255, g/255, b/255);
             const id = this.appCanvas.generateIdFromTag('line');
-            const line = new Line(id, red, this.origin.x, this.origin.y, x, y);
+            const line = new Line(id, color, this.origin.x, this.origin.y, x, y);
             this.appCanvas.addShape(line);
             this.origin = null;
         }
