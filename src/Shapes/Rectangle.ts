@@ -4,9 +4,6 @@ import Vertex from "../Base/Vertex";
 import { degToRad } from "../utils";
 
 export default class Rectangle extends BaseShape {
-    translation: [number, number] = [100, 150];
-    angleInRadians: number = 0;
-    scale: [number, number] = [1, 1];
     length: number;
     width: number;
 
@@ -25,11 +22,11 @@ export default class Rectangle extends BaseShape {
 
         this.pointList.push(new Vertex(x1, y1), new Vertex(x2, y2), new Vertex(x3, y3), new Vertex(x4, y4));
 
-        // console.log(`point 1: ${x1}, ${y1}`);
-        // console.log(`point 2: ${x2}, ${y2}`);
-        // console.log(`point 3: ${x3}, ${y3}`);
-        // console.log(`point 3: ${x4}, ${y4}`);
-        // console.log(`center: ${center.x}, ${center.y}`);
+        console.log(`point 1: ${x1}, ${y1}`);
+        console.log(`point 2: ${x2}, ${y2}`);
+        console.log(`point 3: ${x3}, ${y3}`);
+        console.log(`point 3: ${x4}, ${y4}`);
+        console.log(`center: ${center.x}, ${center.y}`);
     }
 
     setTranslation(x: number, y: number) {

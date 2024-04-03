@@ -2,6 +2,10 @@ import Color from "./Color";
 import Vertex from "./Vertex";
 
 export default abstract class BaseShape {
+    translation: [number, number] = [0, 0];
+    angleInRadians: number = 0;
+    scale: [number, number] = [1, 1];
+
     pointList: Vertex[] = [];
     id: string;
     color: Color;

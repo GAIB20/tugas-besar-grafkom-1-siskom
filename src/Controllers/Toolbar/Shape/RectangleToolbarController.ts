@@ -1,6 +1,7 @@
 import AppCanvas from '../../../AppCanvas';
+import Vertex from '../../../Base/Vertex';
 import Rectangle from '../../../Shapes/Rectangle';
-import { degToRad, euclideanDistanceVtx, getAngle } from '../../../utils';
+import { degToRad, euclideanDistanceVtx, getAngle, m3 } from '../../../utils';
 import ShapeToolbarController from './ShapeToolbarController';
 
 export default class RectangleToolbarController extends ShapeToolbarController {
@@ -86,19 +87,59 @@ export default class RectangleToolbarController extends ShapeToolbarController {
     }
 
     private updateRotation(newRot: number){
-        this.rectangle.setRotation(newRot);
+        const angleInRadians = degToRad(newRot);
+        const rotationDifference = angleInRadians - this.rectangle.angleInRadians;
+
+        let matrix = m3.identity();
+    
+        matrix = m3.translate(matrix, -this.rectangle.center.x, -this.rectangle.center.y);
+        matrix = m3.rotate(matrix, rotationDifference);
+        matrix = m3.translate(matrix, this.rectangle.center.x, this.rectangle.center.y);
+
+        this.rectangle.angleInRadians = angleInRadians;
+        this.recalculateCenter()
+        this.applyTransformationMatrixToRectangle(matrix);
+ 
+        // this.updateShape(this.rectangle);
+        // this.rectangle.setRotation(newRot);
         this.updateShape(this.rectangle);
     }
 
-    updateLength(newLength: number) {
-        const currentLength = euclideanDistanceVtx(this.rectangle.pointList[0], this.rectangle.pointList[1]);
-        
+    private updateLength(newLength: number) {
+        const currentLength = this.rectangle.length;
         const scaleFactor = newLength / currentLength;
-        
-        this.rectangle.pointList[1].x = this.rectangle.pointList[0].x + (this.rectangle.pointList[1].x - this.rectangle.pointList[0].x) * scaleFactor;
-        this.rectangle.pointList[2].x = this.rectangle.pointList[0].x + (this.rectangle.pointList[2].x - this.rectangle.pointList[0].x) * scaleFactor;
-        this.rectangle.pointList[3].x = this.rectangle.pointList[0].x + (this.rectangle.pointList[3].x - this.rectangle.pointList[0].x) * scaleFactor;
+        const currentScaleX = 1;
+        const newScaleY = scaleFactor;
+    
+        let matrix = m3.identity();
+    
+        matrix = m3.translate(matrix, -this.rectangle.center.x, -this.rectangle.center.y);
+        matrix = m3.scale(matrix, currentScaleX, newScaleY);
+        matrix = m3.translate(matrix, this.rectangle.center.x, this.rectangle.center.y);
+    
+        this.applyTransformationMatrixToRectangle(matrix);
+ 
+        this.updateShape(this.rectangle);
     }
+
+    private applyTransformationMatrixToRectangle(matrix: number[]) {
+        this.rectangle.pointList = this.rectangle.pointList.map(vertex => {
+            const vertexHomogeneous = [vertex.x, vertex.y, 1];
+    
+            const transformedVertex = [
+                matrix[0] * vertexHomogeneous[0] + matrix[3] * vertexHomogeneous[1] + matrix[6] * vertexHomogeneous[2],
+                matrix[1] * vertexHomogeneous[0] + matrix[4] * vertexHomogeneous[1] + matrix[7] * vertexHomogeneous[2],
+                matrix[2] * vertexHomogeneous[0] + matrix[5] * vertexHomogeneous[1] + matrix[8] * vertexHomogeneous[2]
+            ];
+            return new Vertex(transformedVertex[0], transformedVertex[1]);
+        });
+        this.recalculateRectangleProperties();
+    }
+    
+    private recalculateRectangleProperties() {
+
+    }
+    
 
     
 }

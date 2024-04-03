@@ -30,8 +30,15 @@ export default class CanvasController {
         this._shapeController = new LineMakerController(appCanvas);
 
         this.canvasElmt.onclick = (e) => {
-            const correctX = e.offsetX * window.devicePixelRatio;
-            const correctY = e.offsetY * window.devicePixelRatio;            
+            const rect = this.canvasElmt.getBoundingClientRect();
+            const scaleX = this.canvasElmt.width / rect.width;
+            const scaleY = this.canvasElmt.height / rect.height;
+
+            const correctX = (e.clientX - rect.left) * scaleX;
+            const correctY = (e.clientY - rect.top) * scaleY;
+            console.log(canvasElmt.width, canvasElmt.height);
+            console.log(canvasElmt.getBoundingClientRect().width, canvasElmt.getBoundingClientRect().height);
+         
             this.shapeController?.handleClick(correctX, correctY);
         };
     }
@@ -44,8 +51,18 @@ export default class CanvasController {
         this._shapeController = v;
 
         this.canvasElmt.onclick = (e) => {
-            const correctX = e.offsetX * window.devicePixelRatio;
-            const correctY = e.offsetY * window.devicePixelRatio;
+            const rect = this.canvasElmt.getBoundingClientRect();
+            const scaleX = this.canvasElmt.width / rect.width;
+            const scaleY = this.canvasElmt.height / rect.height;
+
+            const correctX = (e.clientX - rect.left) * scaleX; 
+            const correctY = (e.clientY - rect.top) * scaleY;
+
+
+            console.log("a ", this.canvasElmt.width, this.canvasElmt.height);
+
+            console.log("b", this.canvasElmt.getBoundingClientRect().width, this.canvasElmt.getBoundingClientRect().height);
+
             this.shapeController?.handleClick(correctX, correctY);
         };
     }
@@ -74,4 +91,5 @@ export default class CanvasController {
             this.buttonContainer.appendChild(button);
         }
     }
+
 }

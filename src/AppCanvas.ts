@@ -36,6 +36,7 @@ export default class AppCanvas {
         const colorBuffer = this.colorBuffer;
 
         Object.values(this.shapes).forEach((shape) => {
+            const { translation, angleInRadians, scale } = shape;
             const positions = shape.pointList.flatMap((point) => [
                 point.x,
                 point.y,
@@ -72,9 +73,9 @@ export default class AppCanvas {
             }
 
             let matrix = m3.identity();
-            matrix = m3.multiply(matrix, m3.translation(shape.center.x, shape.center.y));
-            matrix = m3.multiply(matrix, m3.rotation(shape.rotation));
-            matrix = m3.multiply(matrix, m3.scaling(shape.scaleX, shape.scaleY));
+            matrix = m3.multiply(matrix, m3.translation(translation[0], translation[1]));
+            matrix = m3.multiply(matrix, m3.rotation(angleInRadians));
+            matrix = m3.multiply(matrix, m3.scaling(scale[0], scale[1]));
 
             const matrixLocation = gl.getUniformLocation(this.program, "u_matrix");
             console.log(matrixLocation)

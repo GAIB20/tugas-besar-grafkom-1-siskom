@@ -1,3 +1,5 @@
+import { m3 } from "./utils";
+
 const createShader = (
     gl: WebGLRenderingContext,
     type: number,
