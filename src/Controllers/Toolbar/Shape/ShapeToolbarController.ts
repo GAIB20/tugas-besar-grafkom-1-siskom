@@ -1,5 +1,7 @@
 import AppCanvas from '../../../AppCanvas';
 import BaseShape from '../../../Base/BaseShape';
+import Color from '../../../Base/Color';
+import { hexToRgb, rgbToHex } from '../../../utils';
 
 export default abstract class ShapeToolbarController {
     private appCanvas: AppCanvas;
@@ -13,6 +15,7 @@ export default abstract class ShapeToolbarController {
 
     private vtxPosXSlider: HTMLInputElement | null = null;
     private vtxPosYSlider: HTMLInputElement | null = null;
+    private vtxColorPicker: HTMLInputElement | null = null;
 
     private sliderList: HTMLInputElement[] = [];
     private getterList: (() => number)[] = [];
@@ -68,7 +71,7 @@ export default abstract class ShapeToolbarController {
         const newCb = (e: Event) => {
             cb(e);
             this.updateSliders(slider);
-        }
+        };
         slider.onchange = newCb;
         slider.oninput = newCb;
     }
@@ -80,11 +83,11 @@ export default abstract class ShapeToolbarController {
     updateSliders(ignoreSlider: HTMLInputElement) {
         this.sliderList.forEach((slider, idx) => {
             if (ignoreSlider === slider) return;
-            slider.value = ((this.getterList[idx])()).toString();
+            slider.value = this.getterList[idx]().toString();
         });
 
         if (this.vtxPosXSlider && this.vtxPosYSlider) {
-            const idx = parseInt(this.vertexPicker.value)
+            const idx = parseInt(this.vertexPicker.value);
             const vertex = this.shape.pointList[idx];
 
             this.vtxPosXSlider.value = vertex.x.toString();
@@ -117,11 +120,29 @@ export default abstract class ShapeToolbarController {
         return slider;
     }
 
+    createColorPickerVertex(label: string, hex: string): HTMLInputElement {
+        const container = document.createElement('div');
+        container.classList.add('toolbar-slider-container');
+
+        const labelElmt = document.createElement('div');
+        labelElmt.textContent = label;
+        container.appendChild(labelElmt);
+
+        const colorPicker = document.createElement('input') as HTMLInputElement;
+        colorPicker.type = 'color';
+        colorPicker.value = hex;
+        container.appendChild(colorPicker);
+
+        this.vertexContainer.appendChild(container);
+
+        return colorPicker;
+    }
+
     drawVertexToolbar() {
         while (this.vertexContainer.firstChild)
             this.vertexContainer.removeChild(this.vertexContainer.firstChild);
 
-        const idx = parseInt(this.vertexPicker.value)
+        const idx = parseInt(this.vertexPicker.value);
         const vertex = this.shape.pointList[idx];
 
         this.vtxPosXSlider = this.createSliderVertex(
@@ -139,11 +160,34 @@ export default abstract class ShapeToolbarController {
 
         const updateSlider = () => {
             if (this.vtxPosXSlider && this.vtxPosYSlider)
-                this.updateVertex(idx, parseInt(this.vtxPosXSlider.value), parseInt(this.vtxPosYSlider.value));
+                this.updateVertex(
+                    idx,
+                    parseInt(this.vtxPosXSlider.value),
+                    parseInt(this.vtxPosYSlider.value)
+                );
+        };
+
+        this.vtxColorPicker = this.createColorPickerVertex(
+            'Color',
+            rgbToHex(vertex.c.r * 255, vertex.c.g * 255, vertex.c.b * 255)
+        );
+
+        const updateColor = () => {
+            const { r, g, b } = hexToRgb(
+                this.vtxColorPicker?.value ?? '#000000'
+            ) ?? { r: 0, g: 0, b: 0 };
+            const color = new Color(r / 255, g / 255, b / 255);
+            this.shape.pointList[idx].c = color;
+            this.updateVertex(
+                idx,
+                parseInt(this.vtxPosXSlider?.value ?? vertex.x.toString()),
+                parseInt(this.vtxPosYSlider?.value ?? vertex.y.toString())
+            );
         };
 
         this.registerSlider(this.vtxPosXSlider, updateSlider);
         this.registerSlider(this.vtxPosYSlider, updateSlider);
+        this.registerSlider(this.vtxColorPicker, updateColor);
     }
 
     initVertexToolbar() {

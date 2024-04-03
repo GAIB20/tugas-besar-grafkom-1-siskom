@@ -12,11 +12,11 @@ export default class SquareMakerController implements IShapeMakerController {
         this.appCanvas = appCanvas;
     }
 
-    handleClick(x: number, y: number, colorStr: string): void {
+    handleClick(x: number, y: number, hex: string): void {
         if (this.origin === null) {
             this.origin = {x, y};
         } else {
-            const {r, g, b} = hexToRgb(colorStr) ?? {r: 0, g: 0, b: 0};
+            const {r, g, b} = hexToRgb(hex) ?? {r: 0, g: 0, b: 0};
             const color = new Color(r/255, g/255, b/255);
             const id = this.appCanvas.generateIdFromTag('square');
 
