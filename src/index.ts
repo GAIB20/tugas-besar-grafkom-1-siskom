@@ -10,9 +10,9 @@ const main = () => {
         return;
     }
 
-    const { gl, colorBuffer, positionBuffer } = initRet;
+    const { gl, program, colorBuffer, positionBuffer } = initRet;
 
-    const appCanvas = new AppCanvas(gl, positionBuffer, colorBuffer);
+    const appCanvas = new AppCanvas(gl, program, positionBuffer, colorBuffer);
     
     const canvasController = new CanvasController(appCanvas);
     canvasController.start();

@@ -1,6 +1,8 @@
 import BaseShape from './Base/BaseShape';
+import { m3 } from './utils';
 
 export default class AppCanvas {
+    private program: WebGLProgram;
     private gl: WebGLRenderingContext;
     private positionBuffer: WebGLBuffer;
     private colorBuffer: WebGLBuffer;
@@ -13,12 +15,14 @@ export default class AppCanvas {
 
     constructor(
         gl: WebGLRenderingContext,
+        program: WebGLProgram,
         positionBuffer: WebGLBuffer,
         colorBuffer: WebGLBuffer
     ) {
         this.gl = gl;
         this.positionBuffer = positionBuffer;
         this.colorBuffer = colorBuffer;
+        this.program = program;
 
         this.width = gl.canvas.width;
         this.height = gl.canvas.height;
@@ -59,7 +63,26 @@ export default class AppCanvas {
                 gl.STATIC_DRAW
             );
 
+            if (!(this.positionBuffer instanceof WebGLBuffer)) {
+                throw new Error("Position buffer is not a valid WebGLBuffer");
+            }
+            
+            if (!(this.colorBuffer instanceof WebGLBuffer)) {
+                throw new Error("Color buffer is not a valid WebGLBuffer");
+            }
+
+            let matrix = m3.identity();
+            matrix = m3.multiply(matrix, m3.translation(shape.center.x, shape.center.y));
+            matrix = m3.multiply(matrix, m3.rotation(shape.rotation));
+            matrix = m3.multiply(matrix, m3.scaling(shape.scaleX, shape.scaleY));
+
+            const matrixLocation = gl.getUniformLocation(this.program, "u_matrix");
+            console.log(matrixLocation)
+            gl.uniformMatrix3fv(matrixLocation, false, matrix);
+
             gl.drawArrays(shape.glDrawType, 0, shape.pointList.length);
+
+
         });
     }
 

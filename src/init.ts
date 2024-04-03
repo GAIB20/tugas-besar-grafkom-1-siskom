@@ -138,6 +138,7 @@ const init = () => {
 
     return {
         positionBuffer,
+        program,
         colorBuffer,
         gl,
     };

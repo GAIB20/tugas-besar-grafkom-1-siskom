@@ -8,7 +8,7 @@ export default class RectangleToolbarController extends ShapeToolbarController {
     private posYSlider: HTMLInputElement;
     // private widthSlider: HTMLInputElement;
     // private lengthSlider: HTMLInputElement;
-    // private rotateSlider: HTMLInputElement;
+    private rotateSlider: HTMLInputElement;
 
     private rectangle: Rectangle;
 
@@ -23,6 +23,10 @@ export default class RectangleToolbarController extends ShapeToolbarController {
         // Y Position
         this.posYSlider = this.createSlider('Position Y', () => rectangle.center.y,1,appCanvas.width);
         this.registerSlider(this.posYSlider, (e) => {this.updatePosY(parseInt(this.posYSlider.value))})
+
+        // Rotation
+        this.rotateSlider = this.createSlider('Rotation', this.currentAngle.bind(this), 0, 360);
+        this.registerSlider(this.rotateSlider, (e) => {this.updateRotation(parseInt(this.rotateSlider.value))})
 
     }
 
@@ -71,5 +75,31 @@ export default class RectangleToolbarController extends ShapeToolbarController {
         });
         this.rectangle.center.x = sumX / vertices.length;
         this.rectangle.center.y = sumY / vertices.length;
+    }
+
+    private currentAngle() {
+        return getAngle(this.rectangle.pointList[0], this.rectangle.pointList[1]);
+    }
+
+    private updateRotation(newRot: number){
+        const rotRadians = newRot * Math.PI / 180;
+        // Convert rotation difference to radians
+    
+        const centerX = this.rectangle.center.x;
+        const centerY = this.rectangle.center.y;
+    
+        this.rectangle.pointList = this.rectangle.pointList.map(vertex => {
+            const x = vertex.x - centerX;
+            const y = vertex.y - centerY;
+    
+            // Apply rotation formula
+            const newX = x * Math.cos(rotRadians) - y * Math.sin(rotRadians) + centerX;
+            const newY = x * Math.sin(rotRadians) + y * Math.cos(rotRadians) + centerY;
+    
+            return { ...vertex, x: newX, y: newY }; // Assuming you can use a similar structure or class method to update vertices
+        });
+    
+        // No need to recalculate the center since rotation doesn't affect it
+        this.updateShape(this.rectangle); // Update the canvas with the new rectangle position
     }
 }
