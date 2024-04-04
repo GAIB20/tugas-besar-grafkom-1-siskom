@@ -4,7 +4,7 @@ import Color from '../../../Base/Color';
 import { hexToRgb, rgbToHex } from '../../../utils';
 
 export default abstract class ShapeToolbarController {
-    private appCanvas: AppCanvas;
+    public appCanvas: AppCanvas;
     private shape: BaseShape;
 
     private toolbarContainer: HTMLDivElement;

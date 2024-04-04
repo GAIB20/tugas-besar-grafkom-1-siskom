@@ -20,7 +20,7 @@ export default class RectangleMakerController implements IShapeMakerController {
             const color = new Color(r/255, g/255, b/255);
             const id = this.appCanvas.generateIdFromTag('rectangle');
             const rectangle = new Rectangle(
-                id, color, this.origin.x, this.origin.y,this.origin.x, y, x, this.origin.y, x, y,0,1,1);
+                id, color, this.origin.x, this.origin.y, x, y,0,1,1);
             this.appCanvas.addShape(rectangle);
             this.origin = null;
         }

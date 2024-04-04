@@ -85,6 +85,12 @@ const init = () => {
     // Enable & initialize uniforms and attributes
     // ===========================================
     // Resolution
+    const matrixUniformLocation = gl.getUniformLocation(
+        program,
+        'u_transformation'
+    );
+    gl.uniformMatrix3fv(matrixUniformLocation, false, [1,0,0,0,1,0,0,0,1])
+
     const resolutionUniformLocation = gl.getUniformLocation(
         program,
         'u_resolution'

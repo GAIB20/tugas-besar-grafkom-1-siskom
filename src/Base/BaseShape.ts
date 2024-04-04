@@ -1,8 +1,11 @@
+import { m3 } from "../utils";
 import Color from "./Color";
 import Vertex from "./Vertex";
 
 export default abstract class BaseShape {
+
     pointList: Vertex[] = [];
+    // initialVertex: Vertex;
     id: string;
     color: Color;
     glDrawType: number;
@@ -10,6 +13,8 @@ export default abstract class BaseShape {
     rotation: number;
     scaleX: number;
     scaleY: number;
+
+    transformationMatrix: number[] = m3.identity();
 
     constructor(glDrawType: number, id: string, color: Color, center: Vertex = new Vertex(0, 0, color), rotation = 0, scaleX = 1, scaleY = 1) {
         this.glDrawType = glDrawType;
@@ -19,5 +24,13 @@ export default abstract class BaseShape {
         this.rotation = rotation;
         this.scaleX = scaleX;
         this.scaleY = scaleY;
+    }
+
+    public setTransformationMatrix(){
+
+    }
+
+    public setVirtualTransformationMatrix(){
+
     }
 }

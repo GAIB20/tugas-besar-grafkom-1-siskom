@@ -101,6 +101,26 @@ export const m3 = {
       ];
     },
 
+    multiply3x1: function(a : number[], b : number[]) : number[] {
+      const a00 = a[0 * 3 + 0];
+      const a01 = a[0 * 3 + 1];
+      const a02 = a[0 * 3 + 2];
+      const a10 = a[1 * 3 + 0];
+      const a11 = a[1 * 3 + 1];
+      const a12 = a[1 * 3 + 2];
+      const a20 = a[2 * 3 + 0];
+      const a21 = a[2 * 3 + 1];
+      const a22 = a[2 * 3 + 2];
+      const b00 = b[0 * 3 + 0];
+      const b01 = b[0 * 3 + 1];
+      const b02 = b[0 * 3 + 2];
+      return [
+        b00 * a00 + b01 * a10 + b02 * a20,
+        b00 * a01 + b01 * a11 + b02 * a21,
+        b00 * a02 + b01 * a12 + b02 * a22,
+      ];
+    },
+
     translate: function(m : number[], tx:number, ty:number) {
       return m3.multiply(m, m3.translation(tx, ty));
     },
