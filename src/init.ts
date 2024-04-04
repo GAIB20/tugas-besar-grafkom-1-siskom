@@ -1,5 +1,3 @@
-import { m3 } from "./utils";
-
 const createShader = (
     gl: WebGLRenderingContext,
     type: number,
@@ -66,9 +64,13 @@ const init = () => {
     if (!program) return;
 
     const dpr = window.devicePixelRatio;
-    const {width, height} = canvas.getBoundingClientRect();
-    const displayWidth  = Math.round(width * dpr);
-    const displayHeight = Math.round(height * dpr);
+    // const {width, height} = canvas.getBoundingClientRect();
+    const width = 500;
+    const height = 500;
+    const displayWidth = canvas.clientWidth;
+    const displayHeight = canvas.clientHeight;
+    // const displayWidth  = Math.round(width * dpr);
+    // const displayHeight = Math.round(height * dpr);
 
     const needResize =
         gl.canvas.width != displayWidth || gl.canvas.height != displayHeight;
