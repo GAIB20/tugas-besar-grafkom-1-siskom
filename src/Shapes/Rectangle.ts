@@ -4,9 +4,7 @@ import Vertex from "../Base/Vertex";
 import { degToRad, m3 } from "../utils";
 
 export default class Rectangle extends BaseShape {
-    translation: [number, number] = [0, 0];
-    angleInRadians: number = 0;
-    scale: [number, number] = [1, 1];
+    
     length: number;
     width: number;
     initialPoint: number[];
@@ -61,18 +59,7 @@ export default class Rectangle extends BaseShape {
     }
 
     override setTransformationMatrix(){
-        this.transformationMatrix = m3.identity()
-        const translateToCenter = m3.translation(-this.center.x, -this.center.y);
-        const rotation = m3.rotation(this.angleInRadians);
-        let scaling = m3.scaling(this.scaleX, this.scaleY);
-        let translateBack = m3.translation(this.center.x, this.center.y);
-        const translate = m3.translation(this.translation[0], this.translation[1]);
-
-        let resScale = m3.multiply(scaling, translateToCenter);
-        let resRotate = m3.multiply(rotation,resScale);
-        let resBack = m3.multiply(translateBack, resRotate);
-        const resTranslate = m3.multiply(translate, resBack);
-        this.transformationMatrix = resTranslate;
+        super.setTransformationMatrix();
 
         // const point = [this.pointList[idx].x, this.pointList[idx].y, 1];
         this.endPoint = m3.multiply3x1(this.transformationMatrix, this.endPoint)

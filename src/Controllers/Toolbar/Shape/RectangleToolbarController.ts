@@ -33,8 +33,6 @@ export default class RectangleToolbarController extends ShapeToolbarController {
         this.rotateSlider = this.createSlider('Rotation', () => parseInt(this.rotateSlider.value), -360, 360);
         this.registerSlider(this.rotateSlider, (e) => {this.updateRotation(parseInt(this.rotateSlider.value))})
 
-        // this.pointSlider = this.createSlider('Point', () => parseInt(this.pointSlider.value), -100, 100);
-        // this.registerSlider(this.pointSlider, (e) => {this.updatePointX(parseInt(this.pointSlider.value))})
 
     }
 
@@ -49,12 +47,12 @@ export default class RectangleToolbarController extends ShapeToolbarController {
     }
 
     private updateLength(newLength:number){
-        this.rectangle.scaleX = newLength/300;
+        this.rectangle.scale[0] = newLength/300;
         this.updateShape(this.rectangle);
     }
 
     private updateWidth(newWidth:number){
-        this.rectangle.scaleY = newWidth/300;
+        this.rectangle.scale[1] = newWidth/300;
         this.updateShape(this.rectangle);
     }
 
@@ -81,6 +79,27 @@ export default class RectangleToolbarController extends ShapeToolbarController {
 
 
     updateVertex(idx: number, x: number, y: number): void {
+
+        let endX = x
+        let endY = y
+
+        const vecEnd = [endX, endY, 1];
+        const translateToInitialPoint = m3.translation(-this.rectangle.initialPoint[0], -this.rectangle.initialPoint[1])
+        const rotateReverse = m3.rotation(-this.rectangle.angleInRadians)
+        const translateBack = m3.translation(this.rectangle.initialPoint[0], this.rectangle.initialPoint[1])
+        const resRotate = m3.multiply(rotateReverse,translateToInitialPoint);
+        const resBack = m3.multiply(translateBack, resRotate)
+
+        const resVecEnd = m3.multiply3x1(resBack, vecEnd)
+
+        endX = resVecEnd[0]
+        endY = resVecEnd[1]
+
+        const newRec = new Rectangle(this.rectangle.id, this.rectangle.color, this.rectangle.initialPoint[0], this.rectangle.initialPoint[1], this.rectangle.endPoint[0] = endX, this.rectangle.endPoint[1] = endY, this.rectangle.angleInRadians)
+        this.rectangle = newRec;
+
+        this.updateShape(this.rectangle);
+
         // const diffy = y - this.rectangle.pointList[idx].y;
         // const diffx = x - this.rectangle.pointList[idx].x;
 

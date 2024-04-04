@@ -10,9 +10,9 @@ export default abstract class BaseShape {
     color: Color;
     glDrawType: number;
     center: Vertex;
-    rotation: number;
-    scaleX: number;
-    scaleY: number;
+    translation: [number, number] = [0, 0];
+    angleInRadians: number = 0;
+    scale: [number, number] = [1, 1];
 
     transformationMatrix: number[] = m3.identity();
 
@@ -21,13 +21,24 @@ export default abstract class BaseShape {
         this.id = id;
         this.color = color;
         this.center = center;
-        this.rotation = rotation;
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
+        this.angleInRadians = rotation;
+        this.scale[0] = scaleX;
+        this.scale[1] = scaleY;
     }
 
     public setTransformationMatrix(){
+        this.transformationMatrix = m3.identity()
+        const translateToCenter = m3.translation(-this.center.x, -this.center.y);
+        const rotation = m3.rotation(this.angleInRadians);
+        let scaling = m3.scaling(this.scale[0], this.scale[1]);
+        let translateBack = m3.translation(this.center.x, this.center.y);
+        const translate = m3.translation(this.translation[0], this.translation[1]);
 
+        let resScale = m3.multiply(scaling, translateToCenter);
+        let resRotate = m3.multiply(rotation,resScale);
+        let resBack = m3.multiply(translateBack, resRotate);
+        const resTranslate = m3.multiply(translate, resBack);
+        this.transformationMatrix = resTranslate;
     }
 
     public setVirtualTransformationMatrix(){
