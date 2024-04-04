@@ -3,11 +3,13 @@ import { IShapeMakerController } from './Shape/IShapeMakerController';
 import LineMakerController from './Shape/LineMakerController';
 import RectangleMakerController from './Shape/RectangleMakerController';
 import SquareMakerController from './Shape/SquareMakerController';
+import TriangleMakerController from './Shape/TriangleMakerController';
 
 enum AVAIL_SHAPES {
     Line = 'Line',
     Rectangle = 'Rectangle',
     Square = 'Square',
+    Triangle = 'Triangle'
 }
 
 export default class CanvasController {
@@ -67,6 +69,8 @@ export default class CanvasController {
                 return new RectangleMakerController(this.appCanvas);
             case AVAIL_SHAPES.Square:
                 return new SquareMakerController(this.appCanvas);
+            case AVAIL_SHAPES.Triangle:
+                return new TriangleMakerController(this.appCanvas);
             default:
                 throw new Error('Incorrect shape string');
         }

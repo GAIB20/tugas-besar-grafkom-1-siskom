@@ -2,10 +2,12 @@ import AppCanvas from '../../AppCanvas';
 import Line from '../../Shapes/Line';
 import Rectangle from '../../Shapes/Rectangle';
 import Square from '../../Shapes/Square';
+import Triangle from '../../Shapes/Triangle';
 import LineToolbarController from './Shape/LineToolbarController';
 import RectangleToolbarController from './Shape/RectangleToolbarController';
 import IShapeToolbarController from './Shape/ShapeToolbarController';
 import SquareToolbarController from './Shape/SquareToolbarController';
+import TriangleToolbarController from './Shape/TriangleToolbarController';
 
 export default class ToolbarController {
     private appCanvas: AppCanvas;
@@ -38,6 +40,8 @@ export default class ToolbarController {
                 this.toolbarController = new RectangleToolbarController(shape as Rectangle, appCanvas)
             } else if (shape instanceof Square) {
                 this.toolbarController = new SquareToolbarController(shape as Square, appCanvas)
+            } else if (shape instanceof Triangle) {
+                this.toolbarController = new TriangleToolbarController(shape as Triangle, appCanvas)
             }
         };
 
