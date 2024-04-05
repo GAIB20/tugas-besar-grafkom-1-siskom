@@ -2,7 +2,7 @@ import Square from "../../../Shapes/Square";
 import AppCanvas from '../../../AppCanvas';
 import BaseShape from '../../../Base/BaseShape';
 import ShapeToolbarController from "./ShapeToolbarController";
-import { degToRad } from "../../../utils";
+import { degToRad, m3 } from "../../../utils";
 
 
 export default class SquareToolbarController extends ShapeToolbarController {
@@ -28,7 +28,7 @@ export default class SquareToolbarController extends ShapeToolbarController {
         this.registerSlider(this.sizeSlider, (e) => {this.updateSize(parseInt(this.sizeSlider.value))})
 
         this.rotateSlider = this.createSlider('Rotation', () => parseInt(this.rotateSlider.value), -360, 360);
-        this.registerSlider(this.rotateSlider, (e) => {this.updateRotation(parseInt(this.rotateSlider.value))})
+        this.registerSlider(this.rotateSlider, (e) => {this.updateRotation(parseInt(this.rotateSlider.value))});
     }
 
     private updatePosX(newPosX:number){
@@ -53,6 +53,28 @@ export default class SquareToolbarController extends ShapeToolbarController {
     }
 
     updateVertex(idx: number, x: number, y: number): void {
+        console.log("testing");
+
+        const vertex = this.square.bufferTransformationList[idx];
+        // const opposite = (idx + 2) % 4
+        // const originX = this.square.pointList[opposite].x;
+        // const originY = this.square.pointList[opposite].y;
         
+
+        // const translateToCenter = m3.translation(-originX, -originY);
+        // let scaling = m3.scaling(x, y);
+        // let translateBack = m3.translation(originX, originY);
+
+        // let resScale = m3.multiply(scaling, translateToCenter);
+        // let resBack = m3.multiply(translateBack, resScale);
+        // const resVertexUpdate = m3.multiply(resBack, this.square.transformationMatrix)
+        // this.square.transformationMatrix = resVertexUpdate;
+
+        // this.square.setTransformationMatrix();
+
+        vertex.x = x;
+        vertex.y = y;
+
+        this.updateShape(this.square);
     }
 }

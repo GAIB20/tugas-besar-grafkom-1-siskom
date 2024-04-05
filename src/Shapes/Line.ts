@@ -21,5 +21,6 @@ export default class Line extends BaseShape {
         );
 
         this.pointList.push(origin, end);
+        this.bufferTransformationList = this.pointList;
     }
 }

@@ -5,11 +5,12 @@ import Vertex from "./Vertex";
 export default abstract class BaseShape {
 
     pointList: Vertex[] = [];
-    // initialVertex: Vertex;
+    bufferTransformationList: Vertex[] = [];
     id: string;
     color: Color;
     glDrawType: number;
     center: Vertex;
+
     translation: [number, number] = [0, 0];
     angleInRadians: number = 0;
     scale: [number, number] = [1, 1];
@@ -39,9 +40,5 @@ export default abstract class BaseShape {
         let resBack = m3.multiply(translateBack, resRotate);
         const resTranslate = m3.multiply(translate, resBack);
         this.transformationMatrix = resTranslate;
-    }
-
-    public setVirtualTransformationMatrix(){
-
     }
 }

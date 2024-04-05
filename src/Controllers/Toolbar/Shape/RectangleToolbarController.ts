@@ -10,7 +10,6 @@ export default class RectangleToolbarController extends ShapeToolbarController {
     private widthSlider: HTMLInputElement;
     private lengthSlider: HTMLInputElement;
     private rotateSlider: HTMLInputElement;
-    // private pointSlider: HTMLInputElement;
 
     private rectangle: Rectangle;
 
@@ -58,69 +57,100 @@ export default class RectangleToolbarController extends ShapeToolbarController {
 
     private updateRotation(newRotation :number){
         this.rectangle.angleInRadians = degToRad(newRotation);
+        console.log("rotation: ", newRotation);
         this.updateShape(this.rectangle);
     }
 
-    // private updatePointX(newPointX: number){
-    //     const newRec = new Rectangle(this.rectangle.id, this.rectangle.color, this.rectangle.initialPoint[0], this.rectangle.initialPoint[1], this.rectangle.endPoint[0] = newPointX, this.rectangle.endPoint[1], this.rectangle.angleInRadians)
-    //     // this.rectangle.targetPoint[0] = newPointX;
-    //     this.rectangle = newRec
-    //     this.updateShape(this.rectangle);
-    // }
+    updateVertex(idx: number, x: number, y: number): void{
+            // Center of the rectangle
+            const centerX = (this.rectangle.initialPoint[0] + this.rectangle.endPoint[0]) / 2;
+            const centerY = (this.rectangle.initialPoint[1] + this.rectangle.endPoint[1]) / 2;
+        
+            let translatedX = x - centerX;
+            let translatedY = y - centerY;
+        
+            const angle = -this.rectangle.angleInRadians; // Inverse rotation angle
+            const dx = translatedX * Math.cos(angle) - translatedY * Math.sin(angle);
+            console.log(dx);
+            const dy = translatedX * Math.sin(angle) + translatedY * Math.cos(angle);
+        
+            const originalX = dx + centerX;
+            const originalY = dy + centerY;
 
-    // private updatePoints(idx: number){
-    //     const point = [this.rectangle.pointList[idx].x, this.rectangle.pointList[idx].y, 1];
-    //     const res = m3.multiply3x1(this.rectangle.transformationMatrix, point)
-    //     this.rectangle.pointList[idx].x = res[0];
-    //     this.rectangle.pointList[idx].y = res[1];
-    //     this.updateShape(this.rectangle);
-    // }
+            const movementX = originalX - this.rectangle.pointList[idx].x;
+            const movementY = originalY - this.rectangle.pointList[idx].y;
+        
+            this.rectangle.pointList[idx].x += movementX;
+            this.rectangle.pointList[idx].y += movementY;
+        
+            const ccwIdx = this.rectangle.findCCWAdjacent(idx);
+            const cwIdx = this.rectangle.findCWAdjacent(idx);
+            const opposite = this.rectangle.findOpposite(idx);
 
+            this.rectangle.pointList[ccwIdx].x += movementX;
+            // this.rectangle.pointList[ccwIdx].y += movementY;
+            // this.rectangle.pointList[cwIdx].x += movementX;
+            this.rectangle.pointList[cwIdx].y += movementY;
 
+            // console.log("idx", idx);
+            // console.log("ccw:" , ccwIdx);
+            // console.log("cw" , cwIdx)
 
-    updateVertex(idx: number, x: number, y: number): void {
+            // const newRect = new Rectangle(
+            //     this.rectangle.id,
+            //     this.rectangle.color,
+            //     this.rectangle.pointList[opposite].x,
+            //     this.rectangle.pointList[opposite].y,
+            //     this.rectangle.pointList[idx].x,
+            //     this.rectangle.pointList[idx].y,
+            //     0,
+            //     1,
+            //     1,
+            //     m3.identity()
+            // )
+        
+            // this.rectangle = newRect;
 
-        let endX = x
-        let endY = y
-
-        const vecEnd = [endX, endY, 1];
-        const translateToInitialPoint = m3.translation(-this.rectangle.initialPoint[0], -this.rectangle.initialPoint[1])
-        const rotateReverse = m3.rotation(-this.rectangle.angleInRadians)
-        const translateBack = m3.translation(this.rectangle.initialPoint[0], this.rectangle.initialPoint[1])
-        const resRotate = m3.multiply(rotateReverse,translateToInitialPoint);
-        const resBack = m3.multiply(translateBack, resRotate)
-
-        const resVecEnd = m3.multiply3x1(resBack, vecEnd)
-
-        endX = resVecEnd[0]
-        endY = resVecEnd[1]
-
-        const newRec = new Rectangle(this.rectangle.id, this.rectangle.color, this.rectangle.initialPoint[0], this.rectangle.initialPoint[1], this.rectangle.endPoint[0] = endX, this.rectangle.endPoint[1] = endY, this.rectangle.angleInRadians)
-        this.rectangle = newRec;
-
-        this.updateShape(this.rectangle);
-
-        // const diffy = y - this.rectangle.pointList[idx].y;
-        // const diffx = x - this.rectangle.pointList[idx].x;
-
-        // for (let i = 0; i < 4; i++) {
-        //     if (i != idx) {
-        //         this.rectangle.pointList[i].y += diffy;
-        //         this.rectangle.pointList[i].x += diffx;
-        //     }
-        // }
-
-        // this.rectangle.pointList[idx].x = x;
-        // this.rectangle.pointList[idx].y = y;
-
-        // // this.recalculateCenter();
-        // this.updateShape(this.rectangle);
-    }
-
-
-    private currentAngle() {
-        return getAngle(this.rectangle.pointList[0], this.rectangle.pointList[1]);
-    }
-
+            this.updateShape(this.rectangle);
+        }
+        
     
+
+    public updateVertexTest(idx: number, x: number, y: number): void {
+            // Center of the rectangle
+            const centerX = (this.rectangle.initialPoint[0] + this.rectangle.endPoint[0]) / 2;
+            const centerY = (this.rectangle.initialPoint[1] + this.rectangle.endPoint[1]) / 2;
+        
+            let translatedX = x - centerX;
+            let translatedY = y - centerY;
+        
+            const angle = -this.rectangle.angleInRadians; // Inverse rotation angle
+            const dx = translatedX * Math.cos(angle) - translatedY * Math.sin(angle);
+            console.log(dx);
+            const dy = translatedX * Math.sin(angle) + translatedY * Math.cos(angle);
+        
+            const originalX = dx + centerX;
+            const originalY = dy + centerY;
+
+            const movementX = originalX - this.rectangle.pointList[idx].x;
+            const movementY = originalY - this.rectangle.pointList[idx].y;
+        
+            this.rectangle.pointList[idx].x += movementX;
+            this.rectangle.pointList[idx].y += movementY;
+        
+            const ccwIdx = this.rectangle.findCCWAdjacent(idx);
+            const cwIdx = this.rectangle.findCWAdjacent(idx);
+
+            this.rectangle.pointList[ccwIdx].x += movementX;
+            this.rectangle.pointList[ccwIdx].y += movementY;
+            this.rectangle.pointList[cwIdx].x += movementX;
+            this.rectangle.pointList[cwIdx].y += movementY;
+
+            console.log("idx", idx);
+            console.log("ccw:" , ccwIdx);
+            console.log("cw" , cwIdx)
+        
+            this.updateShape(this.rectangle);
+    }
+
 }

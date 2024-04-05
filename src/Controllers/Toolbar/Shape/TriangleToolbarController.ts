@@ -2,7 +2,7 @@ import Square from "../../../Shapes/Square";
 import AppCanvas from '../../../AppCanvas';
 import BaseShape from '../../../Base/BaseShape';
 import ShapeToolbarController from "./ShapeToolbarController";
-import { degToRad } from "../../../utils";
+import { degToRad, m3 } from "../../../utils";
 import Triangle from "../../../Shapes/Triangle";
 
 
@@ -62,6 +62,19 @@ export default class TriangleToolbarController extends ShapeToolbarController {
     }
 
     updateVertex(idx: number, x: number, y: number): void {
-        
+        const vertex = this.triangle.pointList[idx];
+        const deltaX = x - vertex.x;
+        const deltaY = y - vertex.y;
+
+        const movementVector = [deltaX, deltaY, 1];
+        // const inverseTransformationMatrix = m3.inverse(this.triangle.transformationMatrix);
+        // if (!inverseTransformationMatrix) return;
+
+        // const transformedMovement = m3.multiply3x1(inverseTransformationMatrix, movementVector);
+
+        vertex.x += movementVector[0];
+        vertex.y += movementVector[1];
+
+        this.updateShape(this.triangle);
     }
 }

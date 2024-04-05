@@ -148,14 +148,15 @@ export default abstract class ShapeToolbarController {
         this.vtxPosXSlider = this.createSliderVertex(
             'Pos X',
             vertex.x,
-            0,
-            this.appCanvas.width
+            -0.5*this.appCanvas.width,
+            0.5*this.appCanvas.width
         );
+
         this.vtxPosYSlider = this.createSliderVertex(
             'Pos Y',
             vertex.y,
-            0,
-            this.appCanvas.height
+            -0.5*this.appCanvas.width,
+            0.5*this.appCanvas.width
         );
 
         const updateSlider = () => {

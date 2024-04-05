@@ -72,12 +72,20 @@ export default class AppCanvas {
 
             // Set transformation matrix
             shape.setTransformationMatrix();
-            shape.setVirtualTransformationMatrix();
 
             const matrixLocation = gl.getUniformLocation(this.program, "u_transformation");
             
             const matrix = new Float32Array(shape.transformationMatrix);
             gl.uniformMatrix3fv(matrixLocation, false, matrix);
+
+            // const applySpecialTreatmentLocation = gl.getUniformLocation(this.program, "u_applySpecialTreatment");
+            // const specialOffsetLocation = gl.getUniformLocation(this.program, "u_specialOffset");
+            
+            // const applySpecialTreatment = false; 
+            // const specialOffset = [0.0, 0.0];
+
+            // gl.uniform1i(applySpecialTreatmentLocation, applySpecialTreatment ? 1 : 0);
+            // gl.uniform2fv(specialOffsetLocation, new Float32Array(specialOffset));
 
             gl.drawArrays(shape.glDrawType, 0, shape.pointList.length);
 

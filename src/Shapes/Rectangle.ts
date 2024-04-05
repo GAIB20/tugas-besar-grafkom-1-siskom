@@ -12,21 +12,9 @@ export default class Rectangle extends BaseShape {
     targetPoint: number[];
 
 
-    constructor(id: string, color: Color, startX: number, startY: number, endX: number, endY: number, angleInRadians: number, scaleX: number = 1, scaleY: number = 1) {
+    constructor(id: string, color: Color, startX: number, startY: number, endX: number, endY: number, angleInRadians: number, scaleX: number = 1, scaleY: number = 1, transformation: number[] = m3.identity()) {
         super(5, id, color);
-
-        // const vecEnd = [endX, endY, 1];
-        // const translateToInitialPoint = m3.translation(-startX, -startY)
-        // const rotateReverse = m3.rotation(-angleInRadians)
-        // const translateBack = m3.translation(startX, startY)
-        // const resRotate = m3.multiply(rotateReverse,translateToInitialPoint);
-        // const resBack = m3.multiply(translateBack, resRotate)
-
-        // const resVecEnd = m3.multiply3x1(resBack, vecEnd)
-
-        // endX = resVecEnd[0]
-        // endY = resVecEnd[1]
-
+        
         const x1 = startX;
         const y1 = startY;
         const x2 = endX;
@@ -36,13 +24,15 @@ export default class Rectangle extends BaseShape {
         const x4 = endX;
         const y4 = endY;
 
+        this.transformationMatrix = transformation;
+
         this.angleInRadians = angleInRadians;
         this.scale = [scaleX, scaleY];
         this.initialPoint = [startX, startY, 1];
         this.endPoint = [endX, endY, 1];
         this.targetPoint = [0,0, 1];
         this.length = x2-x1;
-        this.width = x3-x2;
+        this.width = y3-y1;
 
         const centerX = (x1 + x4) / 2;
         const centerY = (y1 + y4) / 2;
@@ -50,12 +40,13 @@ export default class Rectangle extends BaseShape {
         this.center = center;
 
         this.pointList.push(new Vertex(x1, y1, color), new Vertex(x2, y2, color), new Vertex(x3, y3, color), new Vertex(x4, y4, color));
+        this.bufferTransformationList = this.pointList;
 
-        // console.log(`point 1: ${x1}, ${y1}`);
-        // console.log(`point 2: ${x2}, ${y2}`);
-        // console.log(`point 3: ${x3}, ${y3}`);
-        // console.log(`point 3: ${x4}, ${y4}`);
-        // console.log(`center: ${center.x}, ${center.y}`);
+        console.log(`point 0: ${x1}, ${y1}`);
+        console.log(`point 1: ${x2}, ${y2}`);
+        console.log(`point 2: ${x3}, ${y3}`);
+        console.log(`point 3: ${x4}, ${y4}`);
+        console.log(`center: ${center.x}, ${center.y}`);
     }
 
     override setTransformationMatrix(){
@@ -67,7 +58,23 @@ export default class Rectangle extends BaseShape {
     
     }
 
-    public override setVirtualTransformationMatrix(): void {
+    public findCCWAdjacent(pointIdx: number){
+        const ccwAdjacent: { [key: number]: number } = { 0: 2, 1: 0, 2: 3, 3: 1 };
+        return ccwAdjacent[pointIdx];
+    }
+
+    public findCWAdjacent(pointIdx: number){
+        const cwAdjacent: { [key: number]: number } = { 0: 1, 1: 3, 2: 0, 3: 2 };
+        return cwAdjacent[pointIdx];
+    }
+
+    public findOpposite(pointIdx: number){
+        const opposite: { [key: number]: number } = { 0: 3, 1: 2, 2: 1, 3: 0 };
+        return opposite[pointIdx];
+    }
+
+
+    // public override setVirtualTransformationMatrix(): void {
         // // TEST
         // console.log("initial", this.initialPoint);
         // const targetPointX = this.endPoint[0] + this.targetPoint[0];
@@ -113,7 +120,7 @@ export default class Rectangle extends BaseShape {
         // console.log(this.transformationMatrix);
         
         // console.log("res: ", m3.multiply3x1(virtualTransformationMatrix, this.initialPoint))
-    }
+    // }
 
     // setTranslation(x: number, y: number) {
     //     this.translation = [x, y];

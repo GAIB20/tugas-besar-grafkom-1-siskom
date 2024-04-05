@@ -15,6 +15,7 @@ export default class Triangle extends BaseShape {
         const v3 = new Vertex(x3, y3, color);
 
         this.pointList.push(v1, v2, v3);
+        this.bufferTransformationList = this.pointList;
         console.log(this.pointList)
     }
 }
