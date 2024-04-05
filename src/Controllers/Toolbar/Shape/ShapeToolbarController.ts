@@ -56,7 +56,7 @@ export default abstract class ShapeToolbarController {
         slider.type = 'range';
         slider.min = min.toString();
         slider.max = max.toString();
-        slider.value = valueGetter.toString();
+        slider.value = valueGetter().toString();
         container.appendChild(slider);
 
         this.toolbarContainer.appendChild(container);
@@ -148,15 +148,15 @@ export default abstract class ShapeToolbarController {
         this.vtxPosXSlider = this.createSliderVertex(
             'Pos X',
             vertex.x,
-            -0.5*this.appCanvas.width,
-            0.5*this.appCanvas.width
+            1,
+            this.appCanvas.width
         );
 
         this.vtxPosYSlider = this.createSliderVertex(
             'Pos Y',
             vertex.y,
-            -0.5*this.appCanvas.width,
-            0.5*this.appCanvas.width
+            1,
+            this.appCanvas.height
         );
 
         const updateSlider = () => {

@@ -7,6 +7,13 @@ export const euclideanDistanceVtx = (a: Vertex, b: Vertex): number => {
     return Math.sqrt(dx * dx + dy * dy);
 };
 
+export const euclideanDistance = (ax: number, ay: number, bx: number, by: number): number => {
+  const dx = ax - bx;
+  const dy = ay - by;
+
+  return Math.sqrt(dx * dx + dy * dy);
+};
+
 // 360 DEG
 export const getAngle = (origin: Vertex, target: Vertex) => {
     const plusMinusDeg = radToDeg(Math.atan2(origin.y - target.y, origin.x - target.x));
