@@ -7,6 +7,8 @@ export default class AppCanvas {
     private colorBuffer: WebGLBuffer;
     private _updateToolbar: (() => void) | null = null;
 
+    private saveBtn: HTMLButtonElement;
+
     private _shapes: Record<string, BaseShape> = {};
 
     width: number;
@@ -26,7 +28,32 @@ export default class AppCanvas {
         this.width = gl.canvas.width;
         this.height = gl.canvas.height;
 
+        this.saveBtn = document.getElementById(
+            'save-btn'
+        ) as HTMLButtonElement;
+        this.saveBtn.onclick = () => {
+            console.log('saveing');
+            
+            this.saveToJSON();
+        };
+
         this.render();
+    }
+
+    private saveToJSON() {
+        let jsonData = JSON.stringify(this._shapes, null, 2);
+        let blob = new Blob([jsonData], { type: 'application/json' });
+    
+        let a = document.createElement('a');
+        let url = window.URL.createObjectURL(blob);
+        a.href = url;
+        a.download = 'canvas.json';
+    
+        document.body.appendChild(a);
+        a.click();
+    
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
     }
 
     public render() {
@@ -42,7 +69,11 @@ export default class AppCanvas {
 
             let colors: number[] = [];
             for (let i = 0; i < shape.pointList.length; i++) {
-                colors.push(shape.pointList[i].c.r, shape.pointList[i].c.g, shape.pointList[i].c.b);
+                colors.push(
+                    shape.pointList[i].c.r,
+                    shape.pointList[i].c.g,
+                    shape.pointList[i].c.b
+                );
             }
 
             // Bind color data
@@ -62,18 +93,17 @@ export default class AppCanvas {
             );
 
             if (!(this.positionBuffer instanceof WebGLBuffer)) {
-                throw new Error("Position buffer is not a valid WebGLBuffer");
+                throw new Error('Position buffer is not a valid WebGLBuffer');
             }
-            
+
             if (!(this.colorBuffer instanceof WebGLBuffer)) {
-                throw new Error("Color buffer is not a valid WebGLBuffer");
+                throw new Error('Color buffer is not a valid WebGLBuffer');
             }
 
             // Set transformation matrix
             // shape.setTransformationMatrix();
 
             gl.drawArrays(shape.glDrawType, 0, shape.pointList.length);
-
         });
     }
 
@@ -84,17 +114,18 @@ export default class AppCanvas {
     private set shapes(v: Record<string, BaseShape>) {
         this._shapes = v;
         this.render();
-        if (this._updateToolbar)
-            this._updateToolbar.call(this);
+        if (this._updateToolbar) this._updateToolbar.call(this);
     }
 
-    public set updateToolbar(v : () => void) {
+    public set updateToolbar(v: () => void) {
         this._updateToolbar = v;
     }
 
     public generateIdFromTag(tag: string) {
-        const withSameTag = Object.keys(this.shapes).filter((id) => id.startsWith(tag + '-'));
-        return `${tag}-${withSameTag.length + 1}`
+        const withSameTag = Object.keys(this.shapes).filter((id) =>
+            id.startsWith(tag + '-')
+        );
+        return `${tag}-${withSameTag.length + 1}`;
     }
 
     public addShape(shape: BaseShape) {
