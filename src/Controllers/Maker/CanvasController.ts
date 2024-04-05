@@ -21,6 +21,7 @@ export default class CanvasController {
     private colorPicker: HTMLInputElement;
     private appCanvas: AppCanvas;
     private setPolygonButton: HTMLButtonElement;
+    toolbarOnClickCb: (() => void) | null = null;
 
     constructor(appCanvas: AppCanvas) {
         this.appCanvas = appCanvas;
@@ -52,6 +53,8 @@ export default class CanvasController {
                 correctY,
                 this.colorPicker.value
             );
+            if (this.toolbarOnClickCb)
+                this.toolbarOnClickCb()
         };
     }
 
@@ -70,6 +73,8 @@ export default class CanvasController {
                 correctY,
                 this.colorPicker.value
             );
+            if (this.toolbarOnClickCb)
+                this.toolbarOnClickCb()
         };
     }
 

@@ -22,6 +22,7 @@ export default class FanPolygonToolbarController extends ShapeToolbarController 
     ) {
         super(fanPoly, appCanvas);
         this.canvasController = canvasController;
+        this.canvasController.toolbarOnClickCb = this.initVertexToolbar.bind(this);
 
         this.fanPoly = fanPoly;
 
@@ -71,12 +72,6 @@ export default class FanPolygonToolbarController extends ShapeToolbarController 
             this.initVertexToolbar();
             this.updateShape(this.fanPoly);
         };
-
-        const refreshVertexList = this.createVertexButton("Refresh Vertices Dropdown");
-        refreshVertexList.onclick = (e) => {
-            e.preventDefault();
-            this.initVertexToolbar();
-        }
     }
 
     private createVertexButton(text: string): HTMLButtonElement {

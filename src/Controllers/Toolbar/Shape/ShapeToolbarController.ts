@@ -178,7 +178,6 @@ export abstract class ShapeToolbarController {
                 this.vtxColorPicker?.value ?? '#000000'
             ) ?? { r: 0, g: 0, b: 0 };
             const color = new Color(r / 255, g / 255, b / 255);
-            console.log(`updating idx: ${idx}`);
             
             this.shape.pointList[idx].c = color;
             this.updateShape(this.shape);
