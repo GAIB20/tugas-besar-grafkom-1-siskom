@@ -71,7 +71,7 @@ export default class AppCanvas {
             }
 
             // Set transformation matrix
-            shape.setTransformationMatrix();
+            // shape.setTransformationMatrix();
 
             const matrixLocation = gl.getUniformLocation(this.program, "u_transformation");
             
