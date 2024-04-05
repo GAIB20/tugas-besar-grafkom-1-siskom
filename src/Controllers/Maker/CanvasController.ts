@@ -87,6 +87,11 @@ export default class CanvasController {
         }
     }
 
+    editExistingFanPolygon(id: string) {
+        this.shapeController = new FanPolygonMakerController(this.appCanvas);
+        (this.shapeController as FanPolygonMakerController).setCurrentPolygon(id);
+    }
+
     start() {
         for (const shapeStr in AVAIL_SHAPES) {
             const button = document.createElement('button');

@@ -1,7 +1,7 @@
 import AppCanvas from '../../../AppCanvas';
 import Line from '../../../Shapes/Line';
 import { degToRad, euclideanDistanceVtx, getAngle } from '../../../utils';
-import ShapeToolbarController from './ShapeToolbarController';
+import { ShapeToolbarController } from './ShapeToolbarController';
 
 export default class LineToolbarController extends ShapeToolbarController {
     private lengthSlider: HTMLInputElement;
@@ -116,4 +116,6 @@ export default class LineToolbarController extends ShapeToolbarController {
 
         this.updateShape(this.line);
     }
+
+    customVertexToolbar(): void {}
 }

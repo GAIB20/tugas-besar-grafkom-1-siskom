@@ -30,6 +30,19 @@ export default class FanPolygon extends BaseShape {
         this.glDrawType = 6;
         this.recalc();
     }
+    
+    removeVertex(idx: number) {
+        if (this.pointList.length <= 2) {
+            alert("Cannot remove vertex any further");
+            return;
+        }
+        console.log(`removing idx: ${idx}`);
+        this.pointList.splice(idx, 1);
+        this.origin = this.pointList[0];
+        if (this.pointList.length == 2)
+            this.glDrawType = 1;
+        this.recalc();
+    }
 
     recalc() {
         let angles = this.pointList

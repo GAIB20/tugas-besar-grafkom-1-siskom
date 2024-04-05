@@ -1,9 +1,7 @@
 import AppCanvas from '../../../AppCanvas';
-import Color from '../../../Base/Color';
-import Vertex from '../../../Base/Vertex';
 import Rectangle from '../../../Shapes/Rectangle';
-import { degToRad, euclideanDistanceVtx, getAngle, hexToRgb, m3, rgbToHex } from '../../../utils';
-import ShapeToolbarController from './ShapeToolbarController';
+import { degToRad } from '../../../utils';
+import { ShapeToolbarController } from './ShapeToolbarController';
 
 export default class RectangleToolbarController extends ShapeToolbarController {
     private posXSlider: HTMLInputElement;
@@ -124,4 +122,6 @@ export default class RectangleToolbarController extends ShapeToolbarController {
 
             this.updateShape(this.rectangle);
         }
+
+        customVertexToolbar(): void {}
 }

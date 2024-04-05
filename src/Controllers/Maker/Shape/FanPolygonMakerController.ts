@@ -34,6 +34,11 @@ export default class FanPolygonMakerController
         };
     }
 
+    setCurrentPolygon(id: string) {
+        this.currentPoly = this.appCanvas.shapes[id] as FanPolygon;
+        this.origin = this.currentPoly.pointList[0];
+    }
+
     handleClick(x: number, y: number, hex: string): void {
         const { r, g, b } = hexToRgb(hex) ?? { r: 0, g: 0, b: 0 };
         const color = new Color(r / 255, g / 255, b / 255);

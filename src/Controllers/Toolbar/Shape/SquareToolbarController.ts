@@ -1,8 +1,7 @@
-import Square from "../../../Shapes/Square";
 import AppCanvas from '../../../AppCanvas';
-import BaseShape from '../../../Base/BaseShape';
-import ShapeToolbarController from "./ShapeToolbarController";
-import { degToRad, m3 } from "../../../utils";
+import Square from "../../../Shapes/Square";
+import { degToRad } from "../../../utils";
+import { ShapeToolbarController } from "./ShapeToolbarController";
 
 
 export default class SquareToolbarController extends ShapeToolbarController {
@@ -77,4 +76,6 @@ export default class SquareToolbarController extends ShapeToolbarController {
 
         this.updateShape(this.square);
     }
+
+    customVertexToolbar(): void {}
 }

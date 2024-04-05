@@ -3,10 +3,11 @@ import FanPolygon from '../../Shapes/FanPolygon';
 import Line from '../../Shapes/Line';
 import Rectangle from '../../Shapes/Rectangle';
 import Square from '../../Shapes/Square';
+import CanvasController from '../Maker/CanvasController';
 import FanPolygonToolbarController from './Shape/FanPolygonToolbarController';
 import LineToolbarController from './Shape/LineToolbarController';
 import RectangleToolbarController from './Shape/RectangleToolbarController';
-import IShapeToolbarController from './Shape/ShapeToolbarController';
+import { ShapeToolbarController } from './Shape/ShapeToolbarController';
 import SquareToolbarController from './Shape/SquareToolbarController';
 
 export default class ToolbarController {
@@ -15,11 +16,13 @@ export default class ToolbarController {
     private itemPicker: HTMLSelectElement;
     private selectedId: string = '';
 
-    private toolbarController: IShapeToolbarController | null = null;
+    private toolbarController: ShapeToolbarController | null = null;
+    private canvasController: CanvasController;
 
-    constructor(appCanvas: AppCanvas) {
+    constructor(appCanvas: AppCanvas, canvasController: CanvasController) {
         this.appCanvas = appCanvas;
         this.appCanvas.updateToolbar = this.updateShapeList.bind(this);
+        this.canvasController = canvasController;
 
         this.toolbarContainer = document.getElementById(
             'toolbar-container'
@@ -41,7 +44,7 @@ export default class ToolbarController {
             } else if (shape instanceof Square) {
                 this.toolbarController = new SquareToolbarController(shape as Square, appCanvas)
             } else if (shape instanceof FanPolygon) {
-                this.toolbarController = new FanPolygonToolbarController(shape as FanPolygon, appCanvas)
+                this.toolbarController = new FanPolygonToolbarController(shape as FanPolygon, appCanvas, this.canvasController)
             }
         };
 

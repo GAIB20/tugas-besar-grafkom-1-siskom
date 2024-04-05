@@ -1,7 +1,8 @@
 import AppCanvas from '../../../AppCanvas';
 import FanPolygon from '../../../Shapes/FanPolygon';
 import { degToRad, getAngle } from '../../../utils';
-import ShapeToolbarController from './ShapeToolbarController';
+import CanvasController from '../../Maker/CanvasController';
+import { ShapeToolbarController } from './ShapeToolbarController';
 
 export default class FanPolygonToolbarController extends ShapeToolbarController {
     private posXSlider: HTMLInputElement;
@@ -12,9 +13,15 @@ export default class FanPolygonToolbarController extends ShapeToolbarController 
 
     private currentScale: number = 50;
     private fanPoly: FanPolygon;
+    private canvasController: CanvasController;
 
-    constructor(fanPoly: FanPolygon, appCanvas: AppCanvas) {
+    constructor(
+        fanPoly: FanPolygon,
+        appCanvas: AppCanvas,
+        canvasController: CanvasController
+    ) {
         super(fanPoly, appCanvas);
+        this.canvasController = canvasController;
 
         this.fanPoly = fanPoly;
 
@@ -47,6 +54,38 @@ export default class FanPolygonToolbarController extends ShapeToolbarController 
         this.registerSlider(this.scaleSlider, () => {
             this.updateScale(parseInt(this.scaleSlider.value));
         });
+    }
+
+    customVertexToolbar() {
+        const addVtxButton = this.createVertexButton('Add Vertex');
+        addVtxButton.onclick = (e) => {
+            e.preventDefault();
+            this.canvasController.editExistingFanPolygon(this.fanPoly.id);
+            this.initVertexToolbar();
+        };
+
+        const removeVtxButton = this.createVertexButton('Remove Vertex');
+        removeVtxButton.onclick = (e) => {
+            e.preventDefault();
+            this.fanPoly.removeVertex(parseInt(this.selectedVertex));
+            this.initVertexToolbar();
+            this.updateShape(this.fanPoly);
+        };
+
+        const refreshVertexList = this.createVertexButton("Refresh Vertices Dropdown");
+        refreshVertexList.onclick = (e) => {
+            e.preventDefault();
+            this.initVertexToolbar();
+        }
+    }
+
+    private createVertexButton(text: string): HTMLButtonElement {
+        const button = document.createElement('button') as HTMLButtonElement;
+        button.textContent = text;
+
+        this.vertexContainer.appendChild(button);
+
+        return button;
     }
 
     private updatePosX(newPosX: number) {

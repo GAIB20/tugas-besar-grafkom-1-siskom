@@ -3,7 +3,7 @@ import BaseShape from '../../../Base/BaseShape';
 import Color from '../../../Base/Color';
 import { hexToRgb, rgbToHex } from '../../../utils';
 
-export default abstract class ShapeToolbarController {
+export abstract class ShapeToolbarController {
     public appCanvas: AppCanvas;
     private shape: BaseShape;
 
@@ -11,7 +11,7 @@ export default abstract class ShapeToolbarController {
     public vertexContainer: HTMLDivElement;
 
     public vertexPicker: HTMLSelectElement;
-    private selectedVertex = '0';
+    public selectedVertex = '0';
 
     public vtxPosXSlider: HTMLInputElement | null = null;
     public vtxPosYSlider: HTMLInputElement | null = null;
@@ -178,6 +178,8 @@ export default abstract class ShapeToolbarController {
                 this.vtxColorPicker?.value ?? '#000000'
             ) ?? { r: 0, g: 0, b: 0 };
             const color = new Color(r / 255, g / 255, b / 255);
+            console.log(`updating idx: ${idx}`);
+            
             this.shape.pointList[idx].c = color;
             this.updateShape(this.shape);
         };
@@ -185,6 +187,8 @@ export default abstract class ShapeToolbarController {
         this.registerSlider(this.vtxPosXSlider, updateSlider);
         this.registerSlider(this.vtxPosYSlider, updateSlider);
         this.registerSlider(this.vtxColorPicker, updateColor);
+
+        this.customVertexToolbar();
     }
 
     initVertexToolbar() {
@@ -198,13 +202,16 @@ export default abstract class ShapeToolbarController {
             this.vertexPicker.appendChild(option);
         });
 
-        this.vertexPicker.value = this.selectedVertex;
+        this.vertexPicker.value = '0';
+        this.selectedVertex = this.vertexPicker.value;
         this.drawVertexToolbar();
 
         this.vertexPicker.onchange = () => {
+            this.selectedVertex = this.vertexPicker.value;
             this.drawVertexToolbar();
         };
     }
 
+    abstract customVertexToolbar(): void;
     abstract updateVertex(idx: number, x: number, y: number): void;
 }
