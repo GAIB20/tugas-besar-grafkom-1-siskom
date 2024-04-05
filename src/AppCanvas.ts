@@ -1,5 +1,4 @@
 import BaseShape from './Base/BaseShape';
-import { m3 } from './utils';
 
 export default class AppCanvas {
     private program: WebGLProgram;

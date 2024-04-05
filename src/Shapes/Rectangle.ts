@@ -1,7 +1,7 @@
 import BaseShape from "../Base/BaseShape";
 import Color from "../Base/Color";
 import Vertex from "../Base/Vertex";
-import { degToRad, m3 } from "../utils";
+import { m3 } from "../utils";
 
 export default class Rectangle extends BaseShape {
     

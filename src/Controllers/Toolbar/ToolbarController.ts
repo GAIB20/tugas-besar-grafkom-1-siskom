@@ -1,13 +1,16 @@
 import AppCanvas from '../../AppCanvas';
+import CVPolygon from '../../Shapes/CVPolygon';
+import FanPolygon from '../../Shapes/FanPolygon';
 import Line from '../../Shapes/Line';
 import Rectangle from '../../Shapes/Rectangle';
 import Square from '../../Shapes/Square';
-import Triangle from '../../Shapes/Triangle';
+import CanvasController from '../Maker/CanvasController';
+import CVPolygonToolbarController from './Shape/CVPolygonToolbarController';
+import FanPolygonToolbarController from './Shape/FanPolygonToolbarController';
 import LineToolbarController from './Shape/LineToolbarController';
 import RectangleToolbarController from './Shape/RectangleToolbarController';
-import IShapeToolbarController from './Shape/ShapeToolbarController';
+import { ShapeToolbarController } from './Shape/ShapeToolbarController';
 import SquareToolbarController from './Shape/SquareToolbarController';
-import TriangleToolbarController from './Shape/TriangleToolbarController';
 
 export default class ToolbarController {
     private appCanvas: AppCanvas;
@@ -15,11 +18,13 @@ export default class ToolbarController {
     private itemPicker: HTMLSelectElement;
     private selectedId: string = '';
 
-    private toolbarController: IShapeToolbarController | null = null;
+    private toolbarController: ShapeToolbarController | null = null;
+    private canvasController: CanvasController;
 
-    constructor(appCanvas: AppCanvas) {
+    constructor(appCanvas: AppCanvas, canvasController: CanvasController) {
         this.appCanvas = appCanvas;
         this.appCanvas.updateToolbar = this.updateShapeList.bind(this);
+        this.canvasController = canvasController;
 
         this.toolbarContainer = document.getElementById(
             'toolbar-container'
@@ -40,8 +45,10 @@ export default class ToolbarController {
                 this.toolbarController = new RectangleToolbarController(shape as Rectangle, appCanvas)
             } else if (shape instanceof Square) {
                 this.toolbarController = new SquareToolbarController(shape as Square, appCanvas)
-            } else if (shape instanceof Triangle) {
-                this.toolbarController = new TriangleToolbarController(shape as Triangle, appCanvas)
+            } else if (shape instanceof FanPolygon) {
+                this.toolbarController = new FanPolygonToolbarController(shape as FanPolygon, appCanvas, this.canvasController)
+            } else if (shape instanceof CVPolygon) {
+                this.toolbarController = new CVPolygonToolbarController(shape as CVPolygon, appCanvas, this.canvasController)
             }
         };
 
