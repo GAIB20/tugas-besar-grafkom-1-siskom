@@ -148,15 +148,15 @@ export default abstract class ShapeToolbarController {
         this.vtxPosXSlider = this.createSliderVertex(
             'Pos X',
             vertex.x,
-            -0.5*this.appCanvas.width,
-            0.5*this.appCanvas.width
+            -0.5* this.appCanvas.width,
+            0.5* this.appCanvas.width
         );
 
         this.vtxPosYSlider = this.createSliderVertex(
             'Pos Y',
             vertex.y,
-            -0.5*this.appCanvas.width,
-            0.5*this.appCanvas.width
+            -0.5* this.appCanvas.width,
+            0.5* this.appCanvas.width
         );
 
         const updateSlider = () => {
@@ -179,7 +179,11 @@ export default abstract class ShapeToolbarController {
             ) ?? { r: 0, g: 0, b: 0 };
             const color = new Color(r / 255, g / 255, b / 255);
             this.shape.pointList[idx].c = color;
-            this.updateShape(this.shape);
+            this.updateVertex(
+                idx,
+                parseInt(this.vtxPosXSlider?.value ?? vertex.x.toString()),
+                parseInt(this.vtxPosYSlider?.value ?? vertex.y.toString())
+            );
         };
 
         this.registerSlider(this.vtxPosXSlider, updateSlider);
