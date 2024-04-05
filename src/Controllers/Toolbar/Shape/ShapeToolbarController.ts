@@ -8,14 +8,14 @@ export default abstract class ShapeToolbarController {
     private shape: BaseShape;
 
     private toolbarContainer: HTMLDivElement;
-    private vertexContainer: HTMLDivElement;
+    public vertexContainer: HTMLDivElement;
 
-    private vertexPicker: HTMLSelectElement;
+    public vertexPicker: HTMLSelectElement;
     private selectedVertex = '0';
 
-    private vtxPosXSlider: HTMLInputElement | null = null;
-    private vtxPosYSlider: HTMLInputElement | null = null;
-    private vtxColorPicker: HTMLInputElement | null = null;
+    public vtxPosXSlider: HTMLInputElement | null = null;
+    public vtxPosYSlider: HTMLInputElement | null = null;
+    public vtxColorPicker: HTMLInputElement | null = null;
 
     private sliderList: HTMLInputElement[] = [];
     private getterList: (() => number)[] = [];
@@ -179,11 +179,7 @@ export default abstract class ShapeToolbarController {
             ) ?? { r: 0, g: 0, b: 0 };
             const color = new Color(r / 255, g / 255, b / 255);
             this.shape.pointList[idx].c = color;
-            this.updateVertex(
-                idx,
-                parseInt(this.vtxPosXSlider?.value ?? vertex.x.toString()),
-                parseInt(this.vtxPosYSlider?.value ?? vertex.y.toString())
-            );
+            this.updateShape(this.shape);
         };
 
         this.registerSlider(this.vtxPosXSlider, updateSlider);
