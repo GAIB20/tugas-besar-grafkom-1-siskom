@@ -64,15 +64,29 @@ export default class Rectangle extends BaseShape {
 
     public recalculate() {
         const length = Math.sqrt(Math.pow(this.pointList[1].x - this.pointList[0].x, 2) + Math.pow(this.pointList[1].y - this.pointList[0].y, 2));
-    
         const width = Math.sqrt(Math.pow(this.pointList[3].x - this.pointList[1].x, 2) + Math.pow(this.pointList[3].y - this.pointList[1].y, 2));
-    
+
         const centerX = (this.pointList[0].x + this.pointList[1].x + this.pointList[3].x + this.pointList[2].x) / 4;
         const centerY = (this.pointList[0].y + this.pointList[1].y + this.pointList[3].y + this.pointList[2].y) / 4;
     
         this.length = length;
         this.width = width;
         this.center = new Vertex(centerX, centerY, this.color);
+    }
+
+    public findOpposite(pointIdx: number){
+        const opposite: { [key: number]: number } = { 0: 3, 1: 2, 2: 1, 3: 0 };
+        return opposite[pointIdx];
+    }
+
+    public findCCWAdjacent(pointIdx: number){
+        const ccwAdjacent: { [key: number]: number } = { 0: 2, 1: 0, 2: 3, 3: 1 };
+        return ccwAdjacent[pointIdx];
+    }
+
+    public findCWAdjacent(pointIdx: number){
+        const cwAdjacent: { [key: number]: number } = { 0: 1, 1: 3, 2: 0, 3: 2 };
+        return cwAdjacent[pointIdx];
     }
 
 }
