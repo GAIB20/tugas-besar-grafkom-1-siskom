@@ -1,4 +1,5 @@
 import AppCanvas from '../../AppCanvas';
+import CVPolygonMakerController from './Shape/CVPolygonMakerController';
 import FanPolygonMakerController from './Shape/FanPolygonMakerController';
 import { IShapeMakerController } from './Shape/IShapeMakerController';
 import LineMakerController from './Shape/LineMakerController';
@@ -10,6 +11,7 @@ enum AVAIL_SHAPES {
     Rectangle = 'Rectangle',
     Square = 'Square',
     FanPoly = 'FanPoly',
+    CVPoly = 'CVPoly',
 }
 
 export default class CanvasController {
@@ -36,7 +38,7 @@ export default class CanvasController {
         this.buttonContainer = buttonContainer;
 
         this.setPolygonButton.classList.add('hidden');
-        this._shapeController = new FanPolygonMakerController(appCanvas);
+        this._shapeController = new CVPolygonMakerController(appCanvas);
 
         this.colorPicker = document.getElementById(
             'shape-color-picker'
@@ -82,6 +84,8 @@ export default class CanvasController {
                 return new SquareMakerController(this.appCanvas);
             case AVAIL_SHAPES.FanPoly:
                 return new FanPolygonMakerController(this.appCanvas);
+            case AVAIL_SHAPES.CVPoly:
+                return new CVPolygonMakerController(this.appCanvas);
             default:
                 throw new Error('Incorrect shape string');
         }
@@ -90,6 +94,11 @@ export default class CanvasController {
     editExistingFanPolygon(id: string) {
         this.shapeController = new FanPolygonMakerController(this.appCanvas);
         (this.shapeController as FanPolygonMakerController).setCurrentPolygon(id);
+    }
+
+    editExistingCVPolygon(id: string) {
+        this.shapeController = new CVPolygonMakerController(this.appCanvas);
+        (this.shapeController as CVPolygonMakerController).setCurrentPolygon(id);
     }
 
     start() {

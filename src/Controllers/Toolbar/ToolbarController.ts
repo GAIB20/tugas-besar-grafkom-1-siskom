@@ -1,9 +1,11 @@
 import AppCanvas from '../../AppCanvas';
+import CVPolygon from '../../Shapes/CVPolygon';
 import FanPolygon from '../../Shapes/FanPolygon';
 import Line from '../../Shapes/Line';
 import Rectangle from '../../Shapes/Rectangle';
 import Square from '../../Shapes/Square';
 import CanvasController from '../Maker/CanvasController';
+import CVPolygonToolbarController from './Shape/CVPolygonToolbarController';
 import FanPolygonToolbarController from './Shape/FanPolygonToolbarController';
 import LineToolbarController from './Shape/LineToolbarController';
 import RectangleToolbarController from './Shape/RectangleToolbarController';
@@ -45,6 +47,8 @@ export default class ToolbarController {
                 this.toolbarController = new SquareToolbarController(shape as Square, appCanvas)
             } else if (shape instanceof FanPolygon) {
                 this.toolbarController = new FanPolygonToolbarController(shape as FanPolygon, appCanvas, this.canvasController)
+            } else if (shape instanceof CVPolygon) {
+                this.toolbarController = new CVPolygonToolbarController(shape as CVPolygon, appCanvas, this.canvasController)
             }
         };
 
