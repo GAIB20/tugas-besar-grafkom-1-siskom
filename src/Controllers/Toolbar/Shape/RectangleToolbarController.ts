@@ -118,82 +118,26 @@ export default class RectangleToolbarController extends ShapeToolbarController {
     }
 
     updateVertex(idx: number, x: number, y: number): void{
-        this.updateVertexPreserveRectangle(idx, x,y);
-        // const centerX = (this.rectangle.initialPoint[0] + this.rectangle.endPoint[0]) / 2;
-        // const centerY = (this.rectangle.initialPoint[1] + this.rectangle.endPoint[1]) / 2;
-    
-        // let translatedX = x - centerX;
-        // let translatedY = y - centerY;
-    
-        // const angle = this.rectangle.angleInRadians; // Inverse rotation angle
-        // const dx = translatedX * Math.cos(angle) - translatedY * Math.sin(angle);
-        // const dy = translatedX * Math.sin(angle) + translatedY * Math.cos(angle);
-    
-        // const originalX = dx + centerX;
-        // const originalY = dy + centerY;
+        const movedVertex = this.rectangle.pointList[idx];
+        const dx = x - movedVertex.x;
+        const dy = y - movedVertex.y;
 
-        // const movementX = originalX - this.rectangle.pointList[idx].x;
-        // const movementY = originalY - this.rectangle.pointList[idx].y;
-        // // console.log("x:" , movementX);
-        // // console.log("y:" ,movementY);
-    
-        // this.rectangle.pointList[idx].x += movementX;
-        // this.rectangle.pointList[idx].y += movementY;
+        movedVertex.x = x;
+        movedVertex.y = y;
+        const cwAdjacentIdx = this.rectangle.findCWAdjacent(idx);
+        const ccwAdjacentIdx = this.rectangle.findCCWAdjacent(idx);
 
-        // const adjacentVertices = [0, 1, 2, 3].filter(i => i !== idx && i !== this.rectangle.findOpposite(idx));
-
-        // const pointList = this.rectangle.pointList;
-        // const cwAdjacentIdx = this.rectangle.findCWAdjacent(idx);
-        // const ccwAdjacentIdx = this.rectangle.findCCWAdjacent(idx);
-
-        // const oppositeIdx = this.rectangle.findOpposite(idx);
-
-        // const oppositePointX = pointList[oppositeIdx].x;
-        // const oppositePointY = pointList[oppositeIdx].y;
-
-        // // To avoid stuck
-        // adjacentVertices.forEach(vertexIdx => {
-        //     if (vertexIdx === cwAdjacentIdx || vertexIdx === ccwAdjacentIdx) {
-        //         const vertexPoint = pointList[vertexIdx];
-
-        //         if (vertexPoint.x === oppositePointX && vertexPoint.y === oppositePointY) {
-        //             if (Math.abs(movementX) > Math.abs(movementY)) {
-        //                 vertexPoint.x += movementX;
-        //             } else {
-        //                 vertexPoint.y += movementY;
-        //             }
-        //         } else {
-        //             if (vertexPoint.x !== oppositePointX) {
-        //                 vertexPoint.x += movementX;
-        //             }
-        //             if (vertexPoint.y !== oppositePointY) {
-        //                 vertexPoint.y += movementY;
-        //             }
-        //         }
-        //     }
-        // });
-
-        // this.rectangle.recalculate();
-        this.updateShape(this.rectangle);
-    }
-    
-    updateVertexPreserveRectangle(movedVertexIdx: number, newX: number, newY: number): void {
-        const movedVertex = this.rectangle.pointList[movedVertexIdx];
-        const dx = newX - movedVertex.x;
-        const dy = newY - movedVertex.y;
-
-        movedVertex.x = newX;
-        movedVertex.y = newY;
-        const ccwAdjacentIdx = this.rectangle.findCWAdjacent(movedVertexIdx);
-        const cwAdjacentIdx = this.rectangle.findCCWAdjacent(movedVertexIdx);
-
-        if (movedVertexIdx % 2 === 0) {
+        if (idx % 2 === 0) {
             this.rectangle.pointList[cwAdjacentIdx].x += dx;
             this.rectangle.pointList[ccwAdjacentIdx].y += dy;
         } else {
             this.rectangle.pointList[cwAdjacentIdx].y += dy;
             this.rectangle.pointList[ccwAdjacentIdx].x += dx;
         }
+
         this.rectangle.recalculate()
+       
+        this.updateShape(this.rectangle);
     }
+    
 }

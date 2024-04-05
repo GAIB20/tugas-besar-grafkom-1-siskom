@@ -97,8 +97,63 @@ export default class SquareToolbarController extends ShapeToolbarController {
     }
 
     updateVertex(idx: number, x: number, y: number): void {
-        // const opposite = (idx+2)%4;
-        // const newSquare = new Square(this.square.id, this.square.color, this.square.pointList[opposite].x, this.square.pointList[opposite].y,)
-       
+
+            // Find the indices of the adjacent vertices
+            const nextIdx = (idx + 1) % 4;
+            const prevIdx = (idx + 3) % 4;
+            const opposite = (idx +2) % 4;
+            this.square.recalculate();
+
+            const deltaY = this.square.pointList[1].y - this.square.pointList[0].y;
+            const deltaX = this.square.pointList[1].x - this.square.pointList[0].x;
+            this.square.angleInRadians = Math.atan2(deltaY, deltaX);
+
+
+            this.square.translation[0] = -this.square.center.x;
+            this.square.translation[1] = -this.square.center.y;
+            this.square.angleInRadians = - this.square.angleInRadians;
+            this.square.setTransformationMatrix;
+            this.square.updatePointListWithTransformation();
+
+            // // Calculate the difference in position
+            // const dx = x - this.square.pointList[idx].x;
+            // const dy = y - this.square.pointList[idx].y;
+        
+            // // Update the selected vertex
+            // this.square.pointList[idx].x += dx;
+            // this.square.pointList[idx].y += dy;
+        
+            
+            // console.log(idx);
+            // for(let i=0; i<4;i++){
+            //     if(i != idx && i!= opposite){
+            //         if (this.square.pointList[i].x == this.square.pointList[opposite].x && this.square.pointList[i].y == this.square.pointList[opposite].y) {
+            //             if (Math.abs(dx) > Math.abs(dy)) {
+            //                 this.square.pointList[i].x += dx;
+            //             } else {
+            //                 this.square.pointList[i].y += dy;
+            //             }
+            //         } else {
+            //             if (this.square.pointList[i].x == this.square.pointList[opposite].x){
+            //                 this.square.pointList[i].y += dy;
+            //             } if(this.square.pointList[i].y == this.square.pointList[opposite].y){
+            //                 this.square.pointList[i].x += dx; 
+            //             }
+            //         }
+
+                    
+            //     }
+            // }
+
+            // this.square.translation[0] = -this.square.center.x;
+            // this.square.translation[1] = -this.square.center.y;
+            // this.square.angleInRadians = -this.square.angleInRadians;
+            // this.square.setTransformationMatrix;
+            // this.square.updatePointListWithTransformation();
+        
+            // Recalculate the square properties to reflect the changes
+            this.square.recalculate();
+            this.updateShape(this.square);
+        
     }
 }
