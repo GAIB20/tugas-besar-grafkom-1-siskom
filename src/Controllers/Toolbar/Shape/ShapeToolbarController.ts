@@ -180,7 +180,11 @@ export abstract class ShapeToolbarController {
             const color = new Color(r / 255, g / 255, b / 255);
             
             this.shape.pointList[idx].c = color;
-            this.updateShape(this.shape);
+            this.updateVertex(
+                idx,
+                parseInt(this.vtxPosXSlider?.value ?? vertex.x.toString()),
+                parseInt(this.vtxPosYSlider?.value ?? vertex.y.toString())
+            );
         };
 
         this.registerSlider(this.vtxPosXSlider, updateSlider);

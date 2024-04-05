@@ -61,15 +61,6 @@ var AppCanvas = /** @class */ (function () {
             }
             // Set transformation matrix
             // shape.setTransformationMatrix();
-            var matrixLocation = gl.getUniformLocation(_this.program, "u_transformation");
-            var matrix = new Float32Array(shape.transformationMatrix);
-            gl.uniformMatrix3fv(matrixLocation, false, matrix);
-            // const applySpecialTreatmentLocation = gl.getUniformLocation(this.program, "u_applySpecialTreatment");
-            // const specialOffsetLocation = gl.getUniformLocation(this.program, "u_specialOffset");
-            // const applySpecialTreatment = false; 
-            // const specialOffset = [0.0, 0.0];
-            // gl.uniform1i(applySpecialTreatmentLocation, applySpecialTreatment ? 1 : 0);
-            // gl.uniform2fv(specialOffsetLocation, new Float32Array(specialOffset));
             gl.drawArrays(shape.glDrawType, 0, shape.pointList.length);
         });
     };
@@ -214,13 +205,10 @@ exports["default"] = Color;
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 var Vertex = /** @class */ (function () {
-    function Vertex(x, y, c, isSelected) {
-        if (isSelected === void 0) { isSelected = false; }
-        this.isSelected = false;
+    function Vertex(x, y, c) {
         this.x = x;
         this.y = y;
         this.c = c;
-        this.isSelected = isSelected;
     }
     return Vertex;
 }());
@@ -989,91 +977,104 @@ var RectangleToolbarController = /** @class */ (function (_super) {
     __extends(RectangleToolbarController, _super);
     function RectangleToolbarController(rectangle, appCanvas) {
         var _this = _super.call(this, rectangle, appCanvas) || this;
+        _this.initialRotationValue = 0;
         _this.rectangle = rectangle;
-        _this.posXSlider = _this.createSlider('Position X', function () { return parseInt(_this.posXSlider.value); }, -0.5 * appCanvas.width, 0.5 * appCanvas.width);
+        // X Position
+        _this.posXSlider = _this.createSlider('Position X', function () { return rectangle.center.x; }, 1, appCanvas.width);
         _this.registerSlider(_this.posXSlider, function (e) { _this.updatePosX(parseInt(_this.posXSlider.value)); });
-        _this.posYSlider = _this.createSlider('Position Y', function () { return (parseInt(_this.posYSlider.value)); }, -0.5 * appCanvas.width, 0.5 * appCanvas.width);
+        // Y Position
+        _this.posYSlider = _this.createSlider('Position Y', function () { return rectangle.center.y; }, 1, appCanvas.width);
         _this.registerSlider(_this.posYSlider, function (e) { _this.updatePosY(parseInt(_this.posYSlider.value)); });
-        _this.lengthSlider = _this.createSlider('Length', function () { return parseInt(_this.lengthSlider.value); }, 150, 450);
+        _this.lengthSlider = _this.createSlider('Length', function () { return rectangle.length; }, 1, appCanvas.width);
         _this.registerSlider(_this.lengthSlider, function (e) { _this.updateLength(parseInt(_this.lengthSlider.value)); });
-        _this.widthSlider = _this.createSlider('Width', function () { return parseInt(_this.widthSlider.value); }, 150, 450);
+        _this.widthSlider = _this.createSlider('Width', function () { return _this.rectangle.width; }, 1, appCanvas.width);
         _this.registerSlider(_this.widthSlider, function (e) { _this.updateWidth(parseInt(_this.widthSlider.value)); });
-        _this.rotateSlider = _this.createSlider('Rotation', function () { return parseInt(_this.rotateSlider.value); }, -360, 360);
-        _this.registerSlider(_this.rotateSlider, function (e) { _this.updateRotation(parseInt(_this.rotateSlider.value)); });
+        _this.rotateSlider = _this.createSlider('Rotation', function () { return 0; }, -180, 180);
+        _this.registerSlider(_this.rotateSlider, function (e) { _this.handleRotationEnd; });
+        _this.rotateSlider.addEventListener('mousedown', _this.handleRotationStart.bind(_this));
+        _this.rotateSlider.addEventListener('touchstart', _this.handleRotationStart.bind(_this));
+        _this.rotateSlider.addEventListener('mouseup', _this.handleRotationEnd.bind(_this));
+        _this.rotateSlider.addEventListener('touchend', _this.handleRotationEnd.bind(_this));
         return _this;
     }
     RectangleToolbarController.prototype.updatePosX = function (newPosX) {
-        this.rectangle.translation[0] = newPosX;
+        var diff = newPosX - this.rectangle.center.x;
+        for (var i = 0; i < 4; i++) {
+            this.rectangle.pointList[i].x += diff;
+        }
+        this.rectangle.recalculate();
         this.updateShape(this.rectangle);
     };
     RectangleToolbarController.prototype.updatePosY = function (newPosY) {
-        this.rectangle.translation[1] = newPosY;
+        var diff = newPosY - this.rectangle.center.y;
+        for (var i = 0; i < 4; i++) {
+            this.rectangle.pointList[i].y += diff;
+        }
+        this.rectangle.recalculate();
         this.updateShape(this.rectangle);
     };
     RectangleToolbarController.prototype.updateLength = function (newLength) {
-        this.rectangle.scale[0] = newLength / 300;
+        this.rectangle.angleInRadians = -this.rectangle.angleInRadians;
+        this.rectangle.setTransformationMatrix();
+        this.rectangle.updatePointListWithTransformation();
+        var currentLength = (0, utils_1.euclideanDistanceVtx)(this.rectangle.pointList[0], this.rectangle.pointList[1]);
+        var scaleFactor = newLength / currentLength;
+        for (var i = 1; i < 4; i++) {
+            this.rectangle.pointList[i].x = this.rectangle.pointList[0].x + (this.rectangle.pointList[i].x - this.rectangle.pointList[0].x) * scaleFactor;
+        }
+        this.rectangle.angleInRadians = -this.rectangle.angleInRadians;
+        this.rectangle.setTransformationMatrix();
+        this.rectangle.updatePointListWithTransformation();
+        // this.rectangle.angleInRadians = 0;
         this.updateShape(this.rectangle);
     };
     RectangleToolbarController.prototype.updateWidth = function (newWidth) {
-        this.rectangle.scale[1] = newWidth / 300;
+        this.rectangle.angleInRadians = -this.rectangle.angleInRadians;
+        this.rectangle.setTransformationMatrix();
+        this.rectangle.updatePointListWithTransformation();
+        var currentWidth = (0, utils_1.euclideanDistanceVtx)(this.rectangle.pointList[1], this.rectangle.pointList[3]);
+        var scaleFactor = newWidth / currentWidth;
+        for (var i = 1; i < 4; i++) {
+            if (i != 1)
+                this.rectangle.pointList[i].y = this.rectangle.pointList[1].y + (this.rectangle.pointList[i].y - this.rectangle.pointList[1].y) * scaleFactor;
+        }
+        this.rectangle.angleInRadians = -this.rectangle.angleInRadians;
+        this.rectangle.setTransformationMatrix();
+        this.rectangle.updatePointListWithTransformation();
+        // this.rectangle.angleInRadians = 0;
         this.updateShape(this.rectangle);
     };
-    RectangleToolbarController.prototype.updateRotation = function (newRotation) {
-        this.rectangle.angleInRadians = (0, utils_1.degToRad)(newRotation);
-        console.log("rotation: ", newRotation);
+    RectangleToolbarController.prototype.handleRotationStart = function (e) {
+        this.initialRotationValue = parseInt(this.rotateSlider.value);
+    };
+    RectangleToolbarController.prototype.handleRotationEnd = function (e) {
+        var finalRotationValue = parseInt(this.rotateSlider.value);
+        var deltaRotation = finalRotationValue - this.initialRotationValue;
+        this.updateRotation(this.initialRotationValue, deltaRotation);
+    };
+    RectangleToolbarController.prototype.updateRotation = function (initialRotation, deltaRotation) {
+        this.rectangle.angleInRadians = (0, utils_1.degToRad)(deltaRotation);
+        this.rectangle.setTransformationMatrix();
+        this.rectangle.updatePointListWithTransformation();
         this.updateShape(this.rectangle);
-        for (var i = 0; i < 4; i++) {
-            console.log("x: ", this.rectangle.pointList[i].x, "y:", this.rectangle.pointList[i].y);
-        }
     };
     RectangleToolbarController.prototype.updateVertex = function (idx, x, y) {
-        // console.log("xawal :" , x);
-        // console.log("yawal: " , y);
-        var _this = this;
-        var centerX = (this.rectangle.initialPoint[0] + this.rectangle.endPoint[0]) / 2;
-        var centerY = (this.rectangle.initialPoint[1] + this.rectangle.endPoint[1]) / 2;
-        var translatedX = x - centerX;
-        var translatedY = y - centerY;
-        var angle = this.rectangle.angleInRadians; // Inverse rotation angle
-        var dx = translatedX * Math.cos(angle) - translatedY * Math.sin(angle);
-        var dy = translatedX * Math.sin(angle) + translatedY * Math.cos(angle);
-        var originalX = dx + centerX;
-        var originalY = dy + centerY;
-        var movementX = originalX - this.rectangle.pointList[idx].x;
-        var movementY = originalY - this.rectangle.pointList[idx].y;
-        // console.log("x:" , movementX);
-        // console.log("y:" ,movementY);
-        this.rectangle.pointList[idx].x += movementX;
-        this.rectangle.pointList[idx].y += movementY;
-        var adjacentVertices = [0, 1, 2, 3].filter(function (i) { return i !== idx && i !== _this.rectangle.findOpposite(idx); });
-        var pointList = this.rectangle.pointList;
+        var movedVertex = this.rectangle.pointList[idx];
+        var dx = x - movedVertex.x;
+        var dy = y - movedVertex.y;
+        movedVertex.x = x;
+        movedVertex.y = y;
         var cwAdjacentIdx = this.rectangle.findCWAdjacent(idx);
         var ccwAdjacentIdx = this.rectangle.findCCWAdjacent(idx);
-        var oppositeIdx = this.rectangle.findOpposite(idx);
-        var oppositePointX = pointList[oppositeIdx].x;
-        var oppositePointY = pointList[oppositeIdx].y;
-        // To avoid stuck
-        adjacentVertices.forEach(function (vertexIdx) {
-            if (vertexIdx === cwAdjacentIdx || vertexIdx === ccwAdjacentIdx) {
-                var vertexPoint = pointList[vertexIdx];
-                if (vertexPoint.x === oppositePointX && vertexPoint.y === oppositePointY) {
-                    if (Math.abs(movementX) > Math.abs(movementY)) {
-                        vertexPoint.x += movementX;
-                    }
-                    else {
-                        vertexPoint.y += movementY;
-                    }
-                }
-                else {
-                    if (vertexPoint.x !== oppositePointX) {
-                        vertexPoint.x += movementX;
-                    }
-                    if (vertexPoint.y !== oppositePointY) {
-                        vertexPoint.y += movementY;
-                    }
-                }
-            }
-        });
+        if (idx % 2 === 0) {
+            this.rectangle.pointList[cwAdjacentIdx].x += dx;
+            this.rectangle.pointList[ccwAdjacentIdx].y += dy;
+        }
+        else {
+            this.rectangle.pointList[cwAdjacentIdx].y += dy;
+            this.rectangle.pointList[ccwAdjacentIdx].x += dx;
+        }
+        this.rectangle.recalculate();
         this.updateShape(this.rectangle);
     };
     RectangleToolbarController.prototype.customVertexToolbar = function () { };
@@ -1198,11 +1199,11 @@ var ShapeToolbarController = /** @class */ (function () {
         };
         this.vtxColorPicker = this.createColorPickerVertex('Color', (0, utils_1.rgbToHex)(vertex.c.r * 255, vertex.c.g * 255, vertex.c.b * 255));
         var updateColor = function () {
-            var _a, _b, _c;
-            var _d = (_c = (0, utils_1.hexToRgb)((_b = (_a = _this.vtxColorPicker) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : '#000000')) !== null && _c !== void 0 ? _c : { r: 0, g: 0, b: 0 }, r = _d.r, g = _d.g, b = _d.b;
+            var _a, _b, _c, _d, _e, _f, _g;
+            var _h = (_c = (0, utils_1.hexToRgb)((_b = (_a = _this.vtxColorPicker) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : '#000000')) !== null && _c !== void 0 ? _c : { r: 0, g: 0, b: 0 }, r = _h.r, g = _h.g, b = _h.b;
             var color = new Color_1.default(r / 255, g / 255, b / 255);
             _this.shape.pointList[idx].c = color;
-            _this.updateShape(_this.shape);
+            _this.updateVertex(idx, parseInt((_e = (_d = _this.vtxPosXSlider) === null || _d === void 0 ? void 0 : _d.value) !== null && _e !== void 0 ? _e : vertex.x.toString()), parseInt((_g = (_f = _this.vtxPosYSlider) === null || _f === void 0 ? void 0 : _f.value) !== null && _g !== void 0 ? _g : vertex.y.toString()));
         };
         this.registerSlider(this.vtxPosXSlider, updateSlider);
         this.registerSlider(this.vtxPosYSlider, updateSlider);
@@ -1263,50 +1264,119 @@ var SquareToolbarController = /** @class */ (function (_super) {
     __extends(SquareToolbarController, _super);
     function SquareToolbarController(square, appCanvas) {
         var _this = _super.call(this, square, appCanvas) || this;
+        // private pointSlider: HTMLInputElement;
+        _this.initialRotationValue = 0;
         _this.square = square;
-        _this.posXSlider = _this.createSlider('Position X', function () { return parseInt(_this.posXSlider.value); }, -0.5 * appCanvas.width, 0.5 * appCanvas.width);
+        _this.posXSlider = _this.createSlider('Position X', function () { return square.center.x; }, 1, appCanvas.width);
         _this.registerSlider(_this.posXSlider, function (e) { _this.updatePosX(parseInt(_this.posXSlider.value)); });
-        _this.posYSlider = _this.createSlider('Position Y', function () { return (parseInt(_this.posYSlider.value)); }, -0.5 * appCanvas.width, 0.5 * appCanvas.width);
+        _this.posYSlider = _this.createSlider('Position Y', function () { return square.center.y; }, 1, appCanvas.width);
         _this.registerSlider(_this.posYSlider, function (e) { _this.updatePosY(parseInt(_this.posYSlider.value)); });
-        _this.sizeSlider = _this.createSlider('Size', function () { return parseInt(_this.sizeSlider.value); }, 150, 450);
+        _this.sizeSlider = _this.createSlider('Size', function () { return square.size; }, 1, appCanvas.width);
         _this.registerSlider(_this.sizeSlider, function (e) { _this.updateSize(parseInt(_this.sizeSlider.value)); });
-        _this.rotateSlider = _this.createSlider('Rotation', function () { return parseInt(_this.rotateSlider.value); }, -360, 360);
-        _this.registerSlider(_this.rotateSlider, function (e) { _this.updateRotation(parseInt(_this.rotateSlider.value)); });
+        _this.rotateSlider = _this.createSlider('Rotation', function () { return 0; }, -180, 180);
+        _this.registerSlider(_this.rotateSlider, function (e) { _this.handleRotationEnd; });
+        _this.rotateSlider.addEventListener('mousedown', _this.handleRotationStart.bind(_this));
+        _this.rotateSlider.addEventListener('touchstart', _this.handleRotationStart.bind(_this));
+        _this.rotateSlider.addEventListener('mouseup', _this.handleRotationEnd.bind(_this));
+        _this.rotateSlider.addEventListener('touchend', _this.handleRotationEnd.bind(_this));
         return _this;
     }
     SquareToolbarController.prototype.updatePosX = function (newPosX) {
-        this.square.translation[0] = newPosX;
+        var diff = newPosX - this.square.center.x;
+        for (var i = 0; i < 4; i++) {
+            this.square.pointList[i].x += diff;
+        }
+        this.square.recalculate();
         this.updateShape(this.square);
     };
     SquareToolbarController.prototype.updatePosY = function (newPosY) {
-        this.square.translation[1] = newPosY;
+        var diff = newPosY - this.square.center.y;
+        for (var i = 0; i < 4; i++) {
+            this.square.pointList[i].y += diff;
+        }
+        this.square.recalculate();
         this.updateShape(this.square);
     };
     SquareToolbarController.prototype.updateSize = function (newSize) {
-        this.square.scale[0] = newSize / 300;
-        this.square.scale[1] = newSize / 300;
+        var halfNewSize = newSize / 2;
+        var angle = this.square.angleInRadians;
+        var offsets = [
+            { x: -halfNewSize, y: -halfNewSize }, // Top left
+            { x: halfNewSize, y: -halfNewSize }, // Top right
+            { x: halfNewSize, y: halfNewSize }, // Bottom right
+            { x: -halfNewSize, y: halfNewSize }, // Bottom left
+        ];
+        for (var i = 0; i < 4; i++) {
+            var offset = offsets[i];
+            this.square.pointList[i] = {
+                x: this.square.center.x + offset.x * Math.cos(angle) - offset.y * Math.sin(angle),
+                y: this.square.center.y + offset.x * Math.sin(angle) + offset.y * Math.cos(angle),
+                c: this.square.pointList[i].c
+            };
+        }
+        this.square.size = newSize;
+        this.square.recalculate();
         this.updateShape(this.square);
     };
-    SquareToolbarController.prototype.updateRotation = function (newRotation) {
-        this.square.angleInRadians = (0, utils_1.degToRad)(newRotation);
+    SquareToolbarController.prototype.handleRotationStart = function (e) {
+        this.initialRotationValue = parseInt(this.rotateSlider.value);
+    };
+    SquareToolbarController.prototype.handleRotationEnd = function (e) {
+        var finalRotationValue = parseInt(this.rotateSlider.value);
+        var deltaRotation = finalRotationValue - this.initialRotationValue;
+        this.updateRotation(this.initialRotationValue, deltaRotation);
+    };
+    SquareToolbarController.prototype.updateRotation = function (initialRotation, deltaRotation) {
+        this.square.angleInRadians = (0, utils_1.degToRad)(deltaRotation);
+        this.square.setTransformationMatrix();
+        this.square.updatePointListWithTransformation();
         this.updateShape(this.square);
     };
     SquareToolbarController.prototype.updateVertex = function (idx, x, y) {
-        console.log("testing");
-        var vertex = this.square.bufferTransformationList[idx];
-        // const opposite = (idx + 2) % 4
-        // const originX = this.square.pointList[opposite].x;
-        // const originY = this.square.pointList[opposite].y;
-        // const translateToCenter = m3.translation(-originX, -originY);
-        // let scaling = m3.scaling(x, y);
-        // let translateBack = m3.translation(originX, originY);
-        // let resScale = m3.multiply(scaling, translateToCenter);
-        // let resBack = m3.multiply(translateBack, resScale);
-        // const resVertexUpdate = m3.multiply(resBack, this.square.transformationMatrix)
-        // this.square.transformationMatrix = resVertexUpdate;
-        // this.square.setTransformationMatrix();
-        vertex.x = x;
-        vertex.y = y;
+        // Find the indices of the adjacent vertices
+        var nextIdx = (idx + 1) % 4;
+        var prevIdx = (idx + 3) % 4;
+        var opposite = (idx + 2) % 4;
+        this.square.recalculate();
+        var deltaY = this.square.pointList[1].y - this.square.pointList[0].y;
+        var deltaX = this.square.pointList[1].x - this.square.pointList[0].x;
+        this.square.angleInRadians = Math.atan2(deltaY, deltaX);
+        this.square.translation[0] = -this.square.center.x;
+        this.square.translation[1] = -this.square.center.y;
+        this.square.angleInRadians = -this.square.angleInRadians;
+        this.square.setTransformationMatrix;
+        this.square.updatePointListWithTransformation();
+        // // Calculate the difference in position
+        // const dx = x - this.square.pointList[idx].x;
+        // const dy = y - this.square.pointList[idx].y;
+        // // Update the selected vertex
+        // this.square.pointList[idx].x += dx;
+        // this.square.pointList[idx].y += dy;
+        // console.log(idx);
+        // for(let i=0; i<4;i++){
+        //     if(i != idx && i!= opposite){
+        //         if (this.square.pointList[i].x == this.square.pointList[opposite].x && this.square.pointList[i].y == this.square.pointList[opposite].y) {
+        //             if (Math.abs(dx) > Math.abs(dy)) {
+        //                 this.square.pointList[i].x += dx;
+        //             } else {
+        //                 this.square.pointList[i].y += dy;
+        //             }
+        //         } else {
+        //             if (this.square.pointList[i].x == this.square.pointList[opposite].x){
+        //                 this.square.pointList[i].y += dy;
+        //             } if(this.square.pointList[i].y == this.square.pointList[opposite].y){
+        //                 this.square.pointList[i].x += dx; 
+        //             }
+        //         }
+        //     }
+        // }
+        // this.square.translation[0] = -this.square.center.x;
+        // this.square.translation[1] = -this.square.center.y;
+        // this.square.angleInRadians = -this.square.angleInRadians;
+        // this.square.setTransformationMatrix;
+        // this.square.updatePointListWithTransformation();
+        // Recalculate the square properties to reflect the changes
+        this.square.recalculate();
         this.updateShape(this.square);
     };
     SquareToolbarController.prototype.customVertexToolbar = function () { };
@@ -1699,11 +1769,6 @@ var Rectangle = /** @class */ (function (_super) {
         _this.center = center;
         _this.pointList.push(new Vertex_1.default(x1, y1, color), new Vertex_1.default(x2, y2, color), new Vertex_1.default(x3, y3, color), new Vertex_1.default(x4, y4, color));
         _this.bufferTransformationList = _this.pointList;
-        console.log("point 0: ".concat(x1, ", ").concat(y1));
-        console.log("point 1: ".concat(x2, ", ").concat(y2));
-        console.log("point 2: ".concat(x3, ", ").concat(y3));
-        console.log("point 3: ".concat(x4, ", ").concat(y4));
-        console.log("center: ".concat(center.x, ", ").concat(center.y));
         return _this;
     }
     Rectangle.prototype.setTransformationMatrix = function () {
@@ -1712,6 +1777,28 @@ var Rectangle = /** @class */ (function (_super) {
         this.endPoint = utils_1.m3.multiply3x1(this.transformationMatrix, this.endPoint);
         this.initialPoint = utils_1.m3.multiply3x1(this.transformationMatrix, this.initialPoint);
     };
+    Rectangle.prototype.updatePointListWithTransformation = function () {
+        var _this = this;
+        this.pointList.forEach(function (vertex, index) {
+            var vertexMatrix = [vertex.x, vertex.y, 1];
+            var transformedVertex = utils_1.m3.multiply3x1(_this.transformationMatrix, vertexMatrix);
+            _this.pointList[index] = new Vertex_1.default(transformedVertex[0], transformedVertex[1], _this.pointList[index].c);
+        });
+        this.recalculate();
+    };
+    Rectangle.prototype.recalculate = function () {
+        var length = Math.sqrt(Math.pow(this.pointList[1].x - this.pointList[0].x, 2) + Math.pow(this.pointList[1].y - this.pointList[0].y, 2));
+        var width = Math.sqrt(Math.pow(this.pointList[3].x - this.pointList[1].x, 2) + Math.pow(this.pointList[3].y - this.pointList[1].y, 2));
+        var centerX = (this.pointList[0].x + this.pointList[1].x + this.pointList[3].x + this.pointList[2].x) / 4;
+        var centerY = (this.pointList[0].y + this.pointList[1].y + this.pointList[3].y + this.pointList[2].y) / 4;
+        this.length = length;
+        this.width = width;
+        this.center = new Vertex_1.default(centerX, centerY, this.color);
+    };
+    Rectangle.prototype.findOpposite = function (pointIdx) {
+        var opposite = { 0: 3, 1: 2, 2: 1, 3: 0 };
+        return opposite[pointIdx];
+    };
     Rectangle.prototype.findCCWAdjacent = function (pointIdx) {
         var ccwAdjacent = { 0: 2, 1: 0, 2: 3, 3: 1 };
         return ccwAdjacent[pointIdx];
@@ -1719,10 +1806,6 @@ var Rectangle = /** @class */ (function (_super) {
     Rectangle.prototype.findCWAdjacent = function (pointIdx) {
         var cwAdjacent = { 0: 1, 1: 3, 2: 0, 3: 2 };
         return cwAdjacent[pointIdx];
-    };
-    Rectangle.prototype.findOpposite = function (pointIdx) {
-        var opposite = { 0: 3, 1: 2, 2: 1, 3: 0 };
-        return opposite[pointIdx];
     };
     return Rectangle;
 }(BaseShape_1.default));
@@ -1759,6 +1842,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 var BaseShape_1 = __importDefault(__webpack_require__(/*! ../Base/BaseShape */ "./src/Base/BaseShape.ts"));
 var Vertex_1 = __importDefault(__webpack_require__(/*! ../Base/Vertex */ "./src/Base/Vertex.ts"));
+var utils_1 = __webpack_require__(/*! ../utils */ "./src/utils.ts");
 var Square = /** @class */ (function (_super) {
     __extends(Square, _super);
     function Square(id, color, x1, y1, x2, y2, x3, y3, x4, y4, rotation, scaleX, scaleY) {
@@ -1774,10 +1858,34 @@ var Square = /** @class */ (function (_super) {
         _this.v2 = new Vertex_1.default(x2, y2, color);
         _this.v3 = new Vertex_1.default(x3, y3, color);
         _this.v4 = new Vertex_1.default(x4, y4, color);
+        _this.size = (0, utils_1.euclideanDistanceVtx)(_this.v1, _this.v3);
         _this.pointList.push(_this.v1, _this.v2, _this.v3, _this.v4);
         _this.bufferTransformationList = _this.pointList;
+        var deltaY = _this.pointList[1].y - _this.pointList[0].y;
+        var deltaX = _this.pointList[1].x - _this.pointList[0].x;
+        _this.angleInRadians = Math.atan2(deltaY, deltaX);
         return _this;
     }
+    Square.prototype.updatePointListWithTransformation = function () {
+        var _this = this;
+        this.pointList.forEach(function (vertex, index) {
+            var vertexMatrix = [vertex.x, vertex.y, 1];
+            var transformedVertex = utils_1.m3.multiply3x1(_this.transformationMatrix, vertexMatrix);
+            _this.pointList[index] = new Vertex_1.default(transformedVertex[0], transformedVertex[1], _this.pointList[index].c);
+        });
+        this.recalculate();
+    };
+    Square.prototype.recalculate = function () {
+        var length = Math.sqrt(Math.pow(this.pointList[1].x - this.pointList[0].x, 2) + Math.pow(this.pointList[1].y - this.pointList[0].y, 2));
+        var size = Math.sqrt(Math.pow(this.pointList[3].x - this.pointList[1].x, 2) + Math.pow(this.pointList[3].y - this.pointList[1].y, 2));
+        var centerX = (this.pointList[0].x + this.pointList[1].x + this.pointList[3].x + this.pointList[2].x) / 4;
+        var centerY = (this.pointList[0].y + this.pointList[1].y + this.pointList[3].y + this.pointList[2].y) / 4;
+        var deltaY = this.pointList[1].y - this.pointList[0].y;
+        var deltaX = this.pointList[1].x - this.pointList[0].x;
+        this.angleInRadians = Math.atan2(deltaY, deltaX);
+        this.size = size;
+        this.center = new Vertex_1.default(centerX, centerY, this.color);
+    };
     return Square;
 }(BaseShape_1.default));
 exports["default"] = Square;

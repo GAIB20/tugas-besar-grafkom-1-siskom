@@ -41,12 +41,6 @@ export default class Rectangle extends BaseShape {
 
         this.pointList.push(new Vertex(x1, y1, color), new Vertex(x2, y2, color), new Vertex(x3, y3, color), new Vertex(x4, y4, color));
         this.bufferTransformationList = this.pointList;
-
-        console.log(`point 0: ${x1}, ${y1}`);
-        console.log(`point 1: ${x2}, ${y2}`);
-        console.log(`point 2: ${x3}, ${y3}`);
-        console.log(`point 3: ${x4}, ${y4}`);
-        console.log(`center: ${center.x}, ${center.y}`);
     }
 
     override setTransformationMatrix(){
@@ -56,6 +50,33 @@ export default class Rectangle extends BaseShape {
         this.endPoint = m3.multiply3x1(this.transformationMatrix, this.endPoint)
         this.initialPoint = m3.multiply3x1(this.transformationMatrix, this.initialPoint)
     
+    }
+
+    public updatePointListWithTransformation() {
+        this.pointList.forEach((vertex, index) => {
+            const vertexMatrix = [vertex.x, vertex.y, 1];
+            const transformedVertex = m3.multiply3x1(this.transformationMatrix, vertexMatrix);
+            this.pointList[index] = new Vertex(transformedVertex[0], transformedVertex[1], this.pointList[index].c);
+        });
+
+        this.recalculate();
+    }
+
+    public recalculate() {
+        const length = Math.sqrt(Math.pow(this.pointList[1].x - this.pointList[0].x, 2) + Math.pow(this.pointList[1].y - this.pointList[0].y, 2));
+        const width = Math.sqrt(Math.pow(this.pointList[3].x - this.pointList[1].x, 2) + Math.pow(this.pointList[3].y - this.pointList[1].y, 2));
+
+        const centerX = (this.pointList[0].x + this.pointList[1].x + this.pointList[3].x + this.pointList[2].x) / 4;
+        const centerY = (this.pointList[0].y + this.pointList[1].y + this.pointList[3].y + this.pointList[2].y) / 4;
+    
+        this.length = length;
+        this.width = width;
+        this.center = new Vertex(centerX, centerY, this.color);
+    }
+
+    public findOpposite(pointIdx: number){
+        const opposite: { [key: number]: number } = { 0: 3, 1: 2, 2: 1, 3: 0 };
+        return opposite[pointIdx];
     }
 
     public findCCWAdjacent(pointIdx: number){
@@ -68,69 +89,4 @@ export default class Rectangle extends BaseShape {
         return cwAdjacent[pointIdx];
     }
 
-    public findOpposite(pointIdx: number){
-        const opposite: { [key: number]: number } = { 0: 3, 1: 2, 2: 1, 3: 0 };
-        return opposite[pointIdx];
-    }
-
-
-    // public override setVirtualTransformationMatrix(): void {
-        // // TEST
-        // console.log("initial", this.initialPoint);
-        // const targetPointX = this.endPoint[0] + this.targetPoint[0];
-        // const targetPointY = this.endPoint[1] + this.targetPoint[1];
-        // console.log("endPoint X: ", this.endPoint[0]);
-        // console.log("endPoint Y: ", this.endPoint[1]);
-        // console.log("targetX: ", targetPointX);
-        // console.log("targetY: ", targetPointY);
-
-        // const translateToInitial = m3.translation(-this.initialPoint[0], -this.initialPoint[1]);
-        // const rotateRevert = m3.rotation(-this.angleInRadians);
-
-        // const resRotate = m3.multiply(rotateRevert, translateToInitial)
-        // // const resTransBack = m3.multiply(translateBack, resRotate)
-
-        // const rotatedTarget= m3.multiply3x1(resRotate, [targetPointX, targetPointY, 1]);
-        // const rotatedEndPoint=m3.multiply3x1(resRotate, this.endPoint);
-        // console.log("rotated target", rotatedTarget);
-        // console.log("rotated endpoint", rotatedEndPoint);
-        // // this.transformationMatrix = m3.multiply(resRotate, this.transformationMatrix)
-        
-        // const currentLength = rotatedEndPoint[0];
-        // const currentWidth= rotatedEndPoint[1];
-
-        // const updatedLength = currentLength + rotatedTarget[0] - rotatedEndPoint[0];
-        // const updatedWidth = currentWidth + rotatedTarget[1] - rotatedEndPoint[1];
-
-
-        // const scaleLength = updatedLength / currentLength;
-        // const scaleWidth = updatedWidth / currentWidth;
-        // console.log("scale length: ", scaleLength);
-        // console.log("scale width: ", scaleWidth);
-        
-        // const scaling = m3.scaling(scaleLength, scaleWidth);
-        // const rotateBack = m3.rotation(this.angleInRadians);
-        // const translateBack = m3.translation(this.initialPoint[0], this.initialPoint[1]);
-
-        // const resScale = m3.multiply(rotateBack, scaling);
-        // const resBack = m3.multiply(translateBack, resScale);
-
-        // const virtualTransformationMatrix = m3.multiply(resBack, resRotate);
-        // this.transformationMatrix = m3.multiply(virtualTransformationMatrix, this.transformationMatrix);
-        // console.log(this.transformationMatrix);
-        
-        // console.log("res: ", m3.multiply3x1(virtualTransformationMatrix, this.initialPoint))
-    // }
-
-    // setTranslation(x: number, y: number) {
-    //     this.translation = [x, y];
-    // }
-
-    // setRotation(angleInDegrees: number) {
-    //     this.angleInRadians = degToRad(angleInDegrees);
-    // }
-
-    // setScale(scaleX: number, scaleY: number) {
-    //     this.scale = [scaleX, scaleY];
-    // }
 }
